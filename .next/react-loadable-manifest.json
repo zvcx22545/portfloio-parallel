@@ -1,0 +1,20 @@
+{
+  "components\\About.js -> ./FloatingShapes": {
+    "id": "components\\About.js -> ./FloatingShapes",
+    "files": [
+      "static/chunks/_app-pages-browser_components_FloatingShapes_js.js"
+    ]
+  },
+  "components\\Hero.js -> ./Mobile3DVisual": {
+    "id": "components\\Hero.js -> ./Mobile3DVisual",
+    "files": [
+      "static/chunks/_app-pages-browser_components_Mobile3DVisual_js.js"
+    ]
+  },
+  "components\\Hero.js -> ./ThreeHeroScene": {
+    "id": "components\\Hero.js -> ./ThreeHeroScene",
+    "files": [
+      "static/chunks/_app-pages-browser_components_ThreeHeroScene_js.js"
+    ]
+  }
+}
