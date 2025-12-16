@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8000",
     "lint": "next lint"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.19",
-    "next": "^14.2.0",
+    "next": "^15.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sweetalert2": "^11.26.10",
@@ -20,9 +20,9 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "^14.2.0",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1"
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
   }
 }
