@@ -19,7 +19,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      
+
       // Determine active section
       const sections = navLinks.map(link => link.href.substring(1));
       for (const section of sections.reverse()) {
@@ -57,8 +57,8 @@ export default function Navbar() {
         right: 0,
         zIndex: 1000,
         padding: isScrolled ? '0.75rem 0' : '1rem 0',
-        background: isScrolled 
-          ? 'rgba(10, 10, 26, 0.85)' 
+        background: isScrolled
+          ? 'rgba(10, 10, 26, 0.85)'
           : 'transparent',
         backdropFilter: isScrolled ? 'blur(20px) saturate(180%)' : 'none',
         WebkitBackdropFilter: isScrolled ? 'blur(20px) saturate(180%)' : 'none',
@@ -74,8 +74,8 @@ export default function Navbar() {
           padding: '0 1.5rem'
         }}>
           {/* Logo */}
-          <a 
-            href="#hero" 
+          <a
+            href="#hero"
             onClick={(e) => handleNavClick(e, '#hero')}
             style={{
               display: 'flex',
@@ -112,8 +112,7 @@ export default function Navbar() {
           <div style={{
             display: 'none',
             gap: '0.25rem',
-            alignItems: 'center',
-            '@media (min-width: 768px)': { display: 'flex' }
+            alignItems: 'center'
           }} className="desktop-nav">
             {navLinks.map((link) => (
               <a
@@ -127,8 +126,8 @@ export default function Navbar() {
                   fontSize: '0.875rem',
                   fontWeight: 500,
                   color: activeSection === link.href.substring(1) ? '#fff' : '#94a3b8',
-                  background: activeSection === link.href.substring(1) 
-                    ? 'rgba(139, 92, 246, 0.2)' 
+                  background: activeSection === link.href.substring(1)
+                    ? 'rgba(139, 92, 246, 0.2)'
                     : 'transparent',
                   border: activeSection === link.href.substring(1)
                     ? '1px solid rgba(139, 92, 246, 0.3)'

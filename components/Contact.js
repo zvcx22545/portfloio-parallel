@@ -4,25 +4,25 @@ import { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import emailjs from "@emailjs/browser";
 
-// EmailJS Configuration - User should replace with their own keys
-const EMAILJS_SERVICE_ID = "service_portfolio"; // Replace with your EmailJS service ID
-const EMAILJS_TEMPLATE_ID = "template_contact"; // Replace with your EmailJS template ID  
-const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY"; // Replace with your EmailJS public key
+// EmailJS Configuration from environment variables
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "";
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
 
 export default function Contact() {
   const [scrollY, setScrollY] = useState(0);
   const sectionRef = useRef(null);
   const [sectionTop, setSectionTop] = useState(0);
-  
+
   // Email Modal State
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddFieldModalOpen, setIsAddFieldModalOpen] = useState(false);
   const [newFieldLabel, setNewFieldLabel] = useState("");
   const [formFields, setFormFields] = useState([
-    { id: 1, label: "ชื่อ-นามสกุล", value: "", placeholder: "กรุณากรอกชื่อ-นามสกุล", required: true },
-    { id: 2, label: "บริษัท/องค์กร", value: "", placeholder: "ชื่อบริษัทหรือองค์กร", required: true },
-    { id: 3, label: "ตำแหน่งงานที่เปิดรับ", value: "", placeholder: "เช่น Full Stack Developer", required: true },
-    { id: 4, label: "รายละเอียดงาน", value: "", placeholder: "รายละเอียดเพิ่มเติมเกี่ยวกับตำแหน่ง", required: false },
+    { id: 1, label: "ชื่อ-นามสกุล", fieldKey: "name", value: "", placeholder: "กรุณากรอกชื่อ-นามสกุล", required: true },
+    { id: 2, label: "อีเมลติดต่อกลับ", fieldKey: "email", value: "", placeholder: "email@example.com", required: true },
+    { id: 3, label: "หัวข้อ", fieldKey: "title", value: "", placeholder: "เช่น Job Offer / Partnership", required: true },
+    { id: 4, label: "ข้อความ", fieldKey: "message", value: "", placeholder: "รายละเอียดเพิ่มเติม...", required: true, isTextArea: true },
   ]);
   const [isSending, setIsSending] = useState(false);
 
@@ -115,24 +115,28 @@ export default function Contact() {
 
       setIsSending(true);
 
-      // Prepare email content
-      const emailBody = formFields
-        .filter(field => field.value.trim())
-        .map(field => `${field.label}: ${field.value}`)
-        .join("\n\n");
+      // Get field values by key
+      const getFieldValue = (key) => formFields.find(f => f.fieldKey === key)?.value || "";
 
-      // Try EmailJS first (if configured)
-      if (EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+      // Current time for template
+      const currentTime = new Date().toLocaleString('th-TH', {
+        dateStyle: 'full',
+        timeStyle: 'short'
+      });
+
+      // Check if EmailJS is configured
+      if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
         try {
+          // Send email with template parameters matching EmailJS template
           await emailjs.send(
             EMAILJS_SERVICE_ID,
             EMAILJS_TEMPLATE_ID,
             {
-              to_email: "chisanupong.limsakul@gmail.com",
-              from_name: formFields.find(f => f.label === "ชื่อ-นามสกุล")?.value || "ผู้สนใจร่วมงาน",
-              company: formFields.find(f => f.label === "บริษัท/องค์กร")?.value || "-",
-              position: formFields.find(f => f.label === "ตำแหน่งงานที่เปิดรับ")?.value || "-",
-              message: emailBody,
+              name: getFieldValue("name"),
+              email: getFieldValue("email"),
+              title: getFieldValue("title"),
+              message: getFieldValue("message"),
+              time: currentTime,
             },
             EMAILJS_PUBLIC_KEY
           );
@@ -140,7 +144,7 @@ export default function Contact() {
           await Swal.fire({
             icon: "success",
             title: "ส่งอีเมลสำเร็จ!",
-            text: "ขอบคุณที่สนใจร่วมงาน จะติดต่อกลับโดยเร็วครับ",
+            text: "ขอบคุณที่ติดต่อมา จะตอบกลับโดยเร็วครับ",
             confirmButtonText: "ปิด",
             confirmButtonColor: "#22c55e",
             background: "#1a1a2e",
@@ -151,16 +155,15 @@ export default function Contact() {
           clearAllFields();
         } catch (emailError) {
           console.error("EmailJS Error:", emailError);
-          // Fallback to mailto
           throw new Error("EmailJS failed, falling back to mailto");
         }
       } else {
         // Fallback to mailto if EmailJS not configured
         const subject = encodeURIComponent("ข้อเสนองาน / Job Opportunity");
         const body = encodeURIComponent(emailBody);
-        
+
         window.location.href = `mailto:chisanupong.limsakul@gmail.com?subject=${subject}&body=${body}`;
-        
+
         await Swal.fire({
           icon: "info",
           title: "เปิดแอพอีเมลแล้ว",
@@ -175,18 +178,18 @@ export default function Contact() {
       }
     } catch (error) {
       console.error("Send email error:", error);
-      
+
       // Fallback to mailto
       const emailBody = formFields
         .filter(field => field.value.trim())
         .map(field => `${field.label}: ${field.value}`)
         .join("\n\n");
-      
+
       const subject = encodeURIComponent("ข้อเสนองาน / Job Opportunity");
       const body = encodeURIComponent(emailBody);
-      
+
       window.location.href = `mailto:chisanupong.limsakul@gmail.com?subject=${subject}&body=${body}`;
-      
+
       await Swal.fire({
         icon: "info",
         title: "เปิดแอพอีเมลแล้ว",
@@ -259,7 +262,7 @@ export default function Contact() {
               >
                 📧 ส่งอีเมลเชิญร่วมงาน
               </button>
-              
+
               {/* GitHub Link */}
               <a
                 href="https://github.com/zvcx22545"
@@ -307,29 +310,59 @@ export default function Contact() {
 
             {/* Modal Body */}
             <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              {formFields.map((field, index) => (
-                <div key={field.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
-                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                    <label className="text-xs sm:text-sm font-medium text-gray-300">
-                      {field.label}
-                      {field.required && <span className="text-red-400 ml-1">*</span>}
-                    </label>
-                    <button
-                      onClick={() => deleteField(field.id)}
-                      className="text-xs text-red-400 hover:text-red-300 px-2 py-0.5 rounded hover:bg-red-500/10 transition-colors"
-                    >
-                      ลบ
-                    </button>
+              {/* Scrollable Form Fields Container */}
+              <div
+                style={{
+                  maxHeight: formFields.length > 3 ? '280px' : 'auto',
+                  overflowY: formFields.length > 3 ? 'auto' : 'visible',
+                  paddingRight: formFields.length > 3 ? '8px' : '0'
+                }}
+                className="space-y-3 sm:space-y-4"
+              >
+                {formFields.map((field, index) => (
+                  <div key={field.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-300">
+                        {field.label}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {/* Only show delete for custom fields (not core fields) */}
+                      {!field.fieldKey && (
+                        <button
+                          onClick={() => deleteField(field.id)}
+                          className="text-xs text-red-400 hover:text-red-300 px-2 py-0.5 rounded hover:bg-red-500/10 transition-colors"
+                        >
+                          ลบ
+                        </button>
+                      )}
+                    </div>
+                    {field.isTextArea ? (
+                      <textarea
+                        value={field.value}
+                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                        placeholder={field.placeholder}
+                        rows={4}
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                      />
+                    ) : (
+                      <input
+                        type={field.fieldKey === "email" ? "email" : "text"}
+                        value={field.value}
+                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                      />
+                    )}
                   </div>
-                  <input
-                    type="text"
-                    value={field.value}
-                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
-                  />
+                ))}
+              </div>
+
+              {/* Field count indicator */}
+              {formFields.length > 3 && (
+                <div className="text-xs text-gray-500 text-center py-1">
+                  เลื่อนเพื่อดูฟิลด์เพิ่มเติม ({formFields.length} ฟิลด์)
                 </div>
-              ))}
+              )}
 
               {/* Action Buttons Row */}
               <div className="flex flex-wrap gap-2 pt-2">
@@ -405,7 +438,7 @@ export default function Contact() {
               <span className="text-xl">➕</span>
               เพิ่มฟิลด์ใหม่
             </h4>
-            
+
             <input
               type="text"
               value={newFieldLabel}
@@ -415,7 +448,7 @@ export default function Contact() {
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && addNewField()}
             />
-            
+
             <div className="flex gap-2 sm:gap-3">
               <button
                 onClick={() => setIsAddFieldModalOpen(false)}

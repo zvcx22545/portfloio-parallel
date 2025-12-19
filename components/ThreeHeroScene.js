@@ -9,15 +9,15 @@ export default function ThreeHeroScene() {
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
       antialias: true,
       powerPreference: 'high-performance'
     });
-    
+
     const container = mountRef.current;
     if (!container) return;
-    
+
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -27,19 +27,19 @@ export default function ThreeHeroScene() {
     container.appendChild(renderer.domElement);
 
     // Space Gray Materials
-    const spaceGrayMaterial = new THREE.MeshStandardMaterial({ 
+    const spaceGrayMaterial = new THREE.MeshStandardMaterial({
       color: 0x4a4a5a,
       metalness: 0.92,
       roughness: 0.1
     });
 
-    const darkGrayMaterial = new THREE.MeshStandardMaterial({ 
+    const darkGrayMaterial = new THREE.MeshStandardMaterial({
       color: 0x2a2a35,
       metalness: 0.85,
       roughness: 0.15
     });
 
-    const keyMaterial = new THREE.MeshStandardMaterial({ 
+    const keyMaterial = new THREE.MeshStandardMaterial({
       color: 0x3a3a45,
       metalness: 0.2,
       roughness: 0.6
@@ -52,33 +52,45 @@ export default function ThreeHeroScene() {
     const ctx = canvas.getContext('2d');
 
     const codeLines = [
-      { tokens: [
-        { text: 'import', color: '#c792ea' }, { text: ' { useState } ', color: '#ffd700' },
-        { text: 'from', color: '#c792ea' }, { text: " 'react'", color: '#c3e88d' }
-      ]},
-      { tokens: [
-        { text: 'import', color: '#c792ea' }, { text: ' express ', color: '#f78c6c' },
-        { text: 'from', color: '#c792ea' }, { text: " 'express'", color: '#c3e88d' }
-      ]},
-      { tokens: [{ text: '', color: '#fff' }]},
-      { tokens: [
-        { text: 'const', color: '#c792ea' }, { text: ' app ', color: '#f07178' },
-        { text: '= express()', color: '#82aaff' }
-      ]},
-      { tokens: [{ text: '', color: '#fff' }]},
-      { tokens: [
-        { text: 'app', color: '#fff' }, { text: '.get', color: '#82aaff' },
-        { text: "('/api'", color: '#c3e88d' }, { text: ', async (req, res) => {', color: '#89ddff' }
-      ]},
-      { tokens: [
-        { text: '  const', color: '#c792ea' }, { text: ' data ', color: '#f07178' },
-        { text: '= await db.query()', color: '#82aaff' }
-      ]},
-      { tokens: [
-        { text: '  res', color: '#fff' }, { text: '.json', color: '#82aaff' },
-        { text: '({ success: true })', color: '#c3e88d' }
-      ]},
-      { tokens: [{ text: '})', color: '#ffd700' }]},
+      {
+        tokens: [
+          { text: 'import', color: '#c792ea' }, { text: ' { useState } ', color: '#ffd700' },
+          { text: 'from', color: '#c792ea' }, { text: " 'react'", color: '#c3e88d' }
+        ]
+      },
+      {
+        tokens: [
+          { text: 'import', color: '#c792ea' }, { text: ' express ', color: '#f78c6c' },
+          { text: 'from', color: '#c792ea' }, { text: " 'express'", color: '#c3e88d' }
+        ]
+      },
+      { tokens: [{ text: '', color: '#fff' }] },
+      {
+        tokens: [
+          { text: 'const', color: '#c792ea' }, { text: ' app ', color: '#f07178' },
+          { text: '= express()', color: '#82aaff' }
+        ]
+      },
+      { tokens: [{ text: '', color: '#fff' }] },
+      {
+        tokens: [
+          { text: 'app', color: '#fff' }, { text: '.get', color: '#82aaff' },
+          { text: "('/api'", color: '#c3e88d' }, { text: ', async (req, res) => {', color: '#89ddff' }
+        ]
+      },
+      {
+        tokens: [
+          { text: '  const', color: '#c792ea' }, { text: ' data ', color: '#f07178' },
+          { text: '= await db.query()', color: '#82aaff' }
+        ]
+      },
+      {
+        tokens: [
+          { text: '  res', color: '#fff' }, { text: '.json', color: '#82aaff' },
+          { text: '({ success: true })', color: '#c3e88d' }
+        ]
+      },
+      { tokens: [{ text: '})', color: '#ffd700' }] },
     ];
 
     let currentLine = 0;
@@ -92,11 +104,11 @@ export default function ThreeHeroScene() {
       // Dark IDE background
       ctx.fillStyle = '#0d1117';
       ctx.fillRect(0, 0, 1920, 1200);
-      
+
       // Window chrome
       ctx.fillStyle = '#21262d';
       ctx.fillRect(0, 0, 1920, 45);
-      
+
       // Traffic lights
       [{ x: 20, c: '#ff5f56' }, { x: 45, c: '#ffbd2e' }, { x: 70, c: '#27c93f' }].forEach(l => {
         ctx.beginPath();
@@ -104,38 +116,38 @@ export default function ThreeHeroScene() {
         ctx.fillStyle = l.c;
         ctx.fill();
       });
-      
+
       // Tab
       ctx.fillStyle = '#161b22';
       ctx.fillRect(100, 8, 140, 30);
       ctx.fillStyle = '#c9d1d9';
       ctx.font = '12px monospace';
       ctx.fillText('server.js', 115, 28);
-      
+
       // Line numbers
       ctx.fillStyle = '#0d1117';
       ctx.fillRect(0, 45, 50, 1155);
-      
+
       // Code
       ctx.font = '15px "JetBrains Mono", monospace';
-      
+
       let charCount = 0;
       codeLines.forEach((line, li) => {
         const y = 75 + li * 24;
         const lineText = getLineText(line);
-        
+
         // Line number
         ctx.fillStyle = li === currentLine ? '#6b7280' : '#3d4450';
         ctx.textAlign = 'right';
         ctx.fillText((li + 1).toString(), 42, y);
         ctx.textAlign = 'left';
-        
+
         // Current line highlight
         if (li === currentLine) {
           ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
           ctx.fillRect(50, y - 16, 1870, 24);
         }
-        
+
         // Tokens
         let x = 60;
         let lineCharIndex = 0;
@@ -147,17 +159,17 @@ export default function ThreeHeroScene() {
             }
           }
           lineCharIndex += token.text.length;
-          
+
           if (displayText) {
             ctx.fillStyle = token.color;
             ctx.fillText(displayText, x, y);
           }
           x += ctx.measureText(token.text).width;
         });
-        
+
         charCount += lineText.length;
       });
-      
+
       // Cursor
       if (Math.floor(Date.now() / 500) % 2 === 0) {
         let cursorLine = 0, cursorX = 60, chars = 0;
@@ -175,7 +187,7 @@ export default function ThreeHeroScene() {
         ctx.fillStyle = '#a855f7';
         ctx.fillRect(cursorX, 59 + cursorLine * 24, 2, 18);
       }
-      
+
       screenTexture.needsUpdate = true;
     };
 
@@ -252,26 +264,35 @@ export default function ThreeHeroScene() {
     screen.rotation.x = -0.18;
     laptopGroup.add(screen);
 
-    // ========== HOLOGRAM CODE - DIRECT FROM SCREEN ==========
+    // ========== HOLOGRAM - 3D PROJECTION FROM SCREEN ==========
     const holoGroup = new THREE.Group();
-    holoGroup.position.set(0, 0.55, -1.3);
+    holoGroup.position.set(0, 0.55, -1.0); // Close to screen for connection
     holoGroup.rotation.x = -0.18;
     laptopGroup.add(holoGroup);
 
-    // Hologram lines data
-    const holoLineData = [
-      { text: 'import { useState } from "react"', colors: ['#c792ea', '#ffd700', '#c3e88d'] },
-      { text: 'const app = express()', colors: ['#c792ea', '#f07178', '#82aaff'] },
-      { text: 'app.get("/api", async (req, res) => {', colors: ['#82aaff', '#c3e88d', '#89ddff'] },
-      { text: '  const data = await db.query()', colors: ['#c792ea', '#f07178', '#82aaff'] },
-      { text: '  res.json({ success: true })', colors: ['#82aaff', '#c3e88d', '#ff5370'] },
+    // Match code with screen display for visual connection
+    const holoCodeLines = [
+      { text: "import { useState } from 'react'", colors: { keyword: '#c792ea', text: '#ffd700', string: '#c3e88d' } },
+      { text: "const app = express()", colors: { keyword: '#c792ea', text: '#f07178', func: '#82aaff' } },
+      { text: "app.get('/api', async () => {", colors: { method: '#82aaff', string: '#c3e88d', arrow: '#89ddff' } },
+      { text: "  return res.json({ ok: true })", colors: { text: '#82aaff', obj: '#c3e88d' } },
     ];
+
+    const holoLineData = holoCodeLines.map((line, i) => ({
+      text: line.text,
+      fullText: line.text,
+      displayText: '',
+      fontSize: 22,
+      charIndex: 0,
+      isTyping: i === 0,
+      typeSpeed: 40 + Math.random() * 20
+    }));
 
     const holoPlanes = [];
     holoLineData.forEach((line, i) => {
       const hCanvas = document.createElement('canvas');
-      hCanvas.width = 1024;
-      hCanvas.height = 64;
+      hCanvas.width = 800;
+      hCanvas.height = 80;
       const hCtx = hCanvas.getContext('2d');
 
       const hTex = new THREE.CanvasTexture(hCanvas);
@@ -279,32 +300,32 @@ export default function ThreeHeroScene() {
         map: hTex,
         transparent: true,
         opacity: 0,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,  // Changed from AdditiveBlending for visibility
         side: THREE.DoubleSide,
         depthWrite: false
       });
 
-      const hPlane = new THREE.Mesh(new THREE.PlaneGeometry(4, 0.35), hMat);
-      // Position directly in front of screen, stacked vertically
-      hPlane.position.set(0, 1.5 - i * 0.4, 0.5 + i * 0.15);
-      hPlane.userData = { 
-        text: line.text,
-        colors: line.colors,
+      // Smaller planes that fit inside laptop screen
+      const hPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 0.4), hMat);
+      hPlane.position.set(0, 1.2 - i * 0.38, 0.3);
+      hPlane.userData = {
+        ...line,
         canvas: hCanvas,
         ctx: hCtx,
         texture: hTex,
         targetOpacity: 0,
-        index: i
+        index: i,
+        lastTypeTime: 0
       };
       holoGroup.add(hPlane);
       holoPlanes.push(hPlane);
     });
 
-    // Screen glow effect
+    // Simple screen glow effect
     const screenGlowMat = new THREE.MeshBasicMaterial({
-      color: 0x8b5cf6,
+      color: 0x22d3ee,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.08,
       blending: THREE.AdditiveBlending
     });
     const screenGlow = new THREE.Mesh(
@@ -315,46 +336,156 @@ export default function ThreeHeroScene() {
     screenGlow.rotation.x = -0.18;
     laptopGroup.add(screenGlow);
 
-    // Update hologram texture
-    const updateHologram = (plane, time) => {
-      const { ctx, canvas, text, colors, texture, targetOpacity } = plane.userData;
-      
+    // ====== PREMIUM FUTURISTIC HOLOGRAM EFFECT ======
+    const updateHologram = (plane, time, allPlanes) => {
+      const { ctx, canvas, fullText, texture, targetOpacity, fontSize, index } = plane.userData;
+      const userData = plane.userData;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       if (targetOpacity < 0.1) return;
-      
-      // Animated gradient
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-      const shift = (time * 0.3) % 1;
-      colors.forEach((color, i) => {
-        gradient.addColorStop((i / colors.length + shift) % 1, color);
-      });
-      
-      ctx.font = 'bold 28px "JetBrains Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // Multi-layer glow
-      ctx.shadowColor = colors[0];
-      ctx.shadowBlur = 20;
-      ctx.globalAlpha = 0.5;
-      ctx.fillStyle = gradient;
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-      
-      ctx.shadowBlur = 10;
-      ctx.globalAlpha = 0.8;
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-      
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = 1;
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-      
-      // Scanline flicker
-      if (Math.random() > 0.97) {
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, 1);
+
+      // Typing animation logic
+      const now = Date.now();
+      if (userData.isTyping && now - userData.lastTypeTime > userData.typeSpeed) {
+        userData.lastTypeTime = now;
+        if (userData.charIndex < fullText.length) {
+          userData.charIndex++;
+          userData.displayText = fullText.substring(0, userData.charIndex);
+        } else {
+          userData.isTyping = false;
+          const nextIndex = index + 1;
+          if (nextIndex < allPlanes.length) {
+            allPlanes[nextIndex].userData.isTyping = true;
+            allPlanes[nextIndex].userData.targetOpacity = 1;
+          } else {
+            setTimeout(() => {
+              allPlanes.forEach((p, i) => {
+                p.userData.charIndex = 0;
+                p.userData.displayText = '';
+                p.userData.isTyping = i === 0;
+              });
+            }, 2500);
+          }
+        }
       }
-      
+
+      const displayText = userData.displayText || '';
+      if (!displayText) return;
+
+      const textX = 20;
+      const centerY = canvas.height / 2;
+      const textWidth = ctx.measureText(displayText).width || 100;
+
+      // ====== HOLOGRAPHIC BACKGROUND GLOW ======
+      const bgGlow = ctx.createRadialGradient(
+        canvas.width / 2, centerY, 0,
+        canvas.width / 2, centerY, canvas.width * 0.6
+      );
+      bgGlow.addColorStop(0, 'rgba(139, 92, 246, 0.15)');
+      bgGlow.addColorStop(0.5, 'rgba(34, 211, 238, 0.08)');
+      bgGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = bgGlow;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // ====== FLOATING PARTICLES ======
+      for (let i = 0; i < 12; i++) {
+        const px = (time * 30 + i * 70) % canvas.width;
+        const py = centerY + Math.sin(time * 2 + i * 0.8) * 25;
+        const size = 1 + Math.sin(time * 3 + i) * 0.5;
+        const alpha = 0.3 + Math.sin(time * 2 + i) * 0.2;
+        ctx.beginPath();
+        ctx.arc(px, py, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(168, 85, 247, ${alpha})`;
+        ctx.fill();
+      }
+
+      // ====== HOLOGRAM PANEL WITH GRADIENT ======
+      const panelGradient = ctx.createLinearGradient(textX - 15, 0, textX + textWidth + 30, 0);
+      panelGradient.addColorStop(0, 'rgba(139, 92, 246, 0.25)');
+      panelGradient.addColorStop(0.3, 'rgba(20, 20, 40, 0.9)');
+      panelGradient.addColorStop(0.7, 'rgba(20, 20, 40, 0.9)');
+      panelGradient.addColorStop(1, 'rgba(34, 211, 238, 0.2)');
+
+      ctx.fillStyle = panelGradient;
+      ctx.fillRect(textX - 15, centerY - fontSize / 2 - 8, textWidth + 40, fontSize + 16);
+
+      // ====== NEON BORDER ======
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(textX - 15, centerY - fontSize / 2 - 8, textWidth + 40, fontSize + 16);
+
+      // ====== CORNER ACCENTS ======
+      ctx.strokeStyle = '#22d3ee';
+      ctx.lineWidth = 2;
+      // Top-left
+      ctx.beginPath();
+      ctx.moveTo(textX - 15, centerY - fontSize / 2 + 2);
+      ctx.lineTo(textX - 15, centerY - fontSize / 2 - 8);
+      ctx.lineTo(textX - 5, centerY - fontSize / 2 - 8);
+      ctx.stroke();
+      // Bottom-right
+      ctx.beginPath();
+      ctx.moveTo(textX + textWidth + 15, centerY + fontSize / 2 + 8);
+      ctx.lineTo(textX + textWidth + 25, centerY + fontSize / 2 + 8);
+      ctx.lineTo(textX + textWidth + 25, centerY + fontSize / 2 - 2);
+      ctx.stroke();
+
+      // ====== SCAN LINE ANIMATION ======
+      const scanY = ((time * 40) % (fontSize + 20)) + centerY - fontSize / 2 - 10;
+      const scanGradient = ctx.createLinearGradient(0, scanY - 2, 0, scanY + 2);
+      scanGradient.addColorStop(0, 'rgba(34, 211, 238, 0)');
+      scanGradient.addColorStop(0.5, 'rgba(34, 211, 238, 0.4)');
+      scanGradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
+      ctx.fillStyle = scanGradient;
+      ctx.fillRect(textX - 15, scanY, textWidth + 40, 4);
+
+      // ====== TEXT WITH GRADIENT ======
+      ctx.font = `bold ${fontSize}px "JetBrains Mono", "Fira Code", monospace`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      const textGradient = ctx.createLinearGradient(textX, 0, textX + textWidth, 0);
+      textGradient.addColorStop(0, '#a855f7');
+      textGradient.addColorStop(0.3, '#22d3ee');
+      textGradient.addColorStop(0.6, '#ffffff');
+      textGradient.addColorStop(1, '#a855f7');
+
+      // Text shadow layers for depth
+      ctx.shadowColor = '#a855f7';
+      ctx.shadowBlur = 4;
+      ctx.fillStyle = textGradient;
+      ctx.fillText(displayText, textX, centerY);
+
+      // Sharp overlay
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.9;
+      ctx.fillText(displayText, textX, centerY);
+      ctx.globalAlpha = 1;
+
+      // ====== TYPING CURSOR WITH GLOW ======
+      if (userData.isTyping) {
+        const cursorX = textX + ctx.measureText(displayText).width + 6;
+        const pulse = 0.5 + Math.sin(time * 8) * 0.5;
+        if (pulse > 0.3) {
+          ctx.shadowColor = '#22d3ee';
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillRect(cursorX, centerY - fontSize / 2 + 3, 3, fontSize - 6);
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      // ====== DATA STREAM EFFECT ======
+      ctx.font = '8px monospace';
+      ctx.fillStyle = 'rgba(34, 211, 238, 0.3)';
+      for (let i = 0; i < 5; i++) {
+        const streamX = textX + textWidth + 35 + i * 8;
+        const char = String.fromCharCode(48 + Math.floor(time * 10 + i) % 10);
+        ctx.fillText(char, streamX, centerY + Math.sin(time * 3 + i) * 8);
+      }
+
       texture.needsUpdate = true;
     };
 
@@ -389,7 +520,7 @@ export default function ThreeHeroScene() {
     scene.add(mainLight);
     scene.add(new THREE.DirectionalLight(0xa855f7, 0.4).translateX(-5).translateY(5));
     scene.add(new THREE.DirectionalLight(0x22d3ee, 0.3).translateY(-5).translateZ(-10));
-    
+
     const screenLight = new THREE.PointLight(0x8b5cf6, 0.8, 12);
     screenLight.position.set(0, 1, 2);
     scene.add(screenLight);
@@ -409,7 +540,7 @@ export default function ThreeHeroScene() {
     const totalChars = getTotalChars();
     const typeInterval = setInterval(() => {
       totalCharsTyped++;
-      
+
       // Calculate current line
       let chars = 0;
       for (let i = 0; i < codeLines.length; i++) {
@@ -417,18 +548,10 @@ export default function ThreeHeroScene() {
         if (chars + lineLen >= totalCharsTyped) {
           currentLine = i;
           currentChar = totalCharsTyped - chars;
-          
-          // Show hologram for completed lines
-          if (i < holoPlanes.length && currentChar >= lineLen * 0.8) {
-            holoPlanes[i].userData.targetOpacity = 0.9;
-          }
+
           break;
         }
         chars += lineLen;
-        // Show hologram for past lines
-        if (i < holoPlanes.length) {
-          holoPlanes[i].userData.targetOpacity = 0.9;
-        }
       }
 
       // Key press animation
@@ -436,42 +559,42 @@ export default function ThreeHeroScene() {
       rk.mesh.position.y = rk.baseY - 0.015;
       setTimeout(() => { rk.mesh.position.y = rk.baseY; }, 60);
 
-      // Reset
+      // Reset screen code
       if (totalCharsTyped >= totalChars) {
         setTimeout(() => {
           totalCharsTyped = 0;
           currentLine = 0;
           currentChar = 0;
-          holoPlanes.forEach(p => p.userData.targetOpacity = 0);
         }, 3000);
       }
     }, 80);
 
+    // Start hologram typing immediately
+    holoPlanes[0].userData.targetOpacity = 1;
+    holoPlanes[0].userData.isTyping = true;
+
     let time = 0;
     let animId;
-    
+
     const animate = () => {
       animId = requestAnimationFrame(animate);
       time += 0.01;
-      
+
       laptopGroup.rotation.y += (targetRotY - laptopGroup.rotation.y) * 0.04;
       laptopGroup.rotation.x += (targetRotX - laptopGroup.rotation.x) * 0.04;
       laptopGroup.position.y = Math.sin(time * 0.6) * 0.08;
 
-      // Update holograms
+      // Update cyber holograms with typing animation
       holoPlanes.forEach((p, i) => {
-        updateHologram(p, time);
-        p.material.opacity += (p.userData.targetOpacity - p.material.opacity) * 0.08;
-        // Floating animation
-        p.position.y = (1.5 - i * 0.4) + Math.sin(time * 1.5 + i * 0.3) * 0.03;
-        p.position.x = Math.sin(time * 0.8 + i * 0.2) * 0.05;
-        
-        // Glitch
-        if (Math.random() > 0.99) p.material.opacity *= 0.5;
+        updateHologram(p, time, holoPlanes);
+        p.material.opacity += (p.userData.targetOpacity - p.material.opacity) * 0.1;
+        // Subtle floating animation
+        p.position.y = (1.2 - i * 0.38) + Math.sin(time * 1.2 + i * 0.4) * 0.015;
+        p.position.x = Math.sin(time * 0.6 + i * 0.2) * 0.02;
       });
 
       // Screen glow pulse
-      screenGlowMat.opacity = 0.08 + Math.sin(time * 2) * 0.04;
+      screenGlowMat.opacity = 0.06 + Math.sin(time * 2) * 0.03;
       screenLight.intensity = 0.7 + Math.sin(time * 1.5) * 0.2;
 
       particles.rotation.y += 0.0003;

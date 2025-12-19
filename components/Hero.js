@@ -6,9 +6,9 @@ import dynamic from 'next/dynamic';
 const ThreeHeroScene = dynamic(() => import('./ThreeHeroScene'), {
   ssr: false,
   loading: () => (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
+    <div style={{
+      width: '100%',
+      height: '100%',
       background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.2), transparent)',
       borderRadius: '1rem',
       display: 'flex',
@@ -30,22 +30,108 @@ const ThreeHeroScene = dynamic(() => import('./ThreeHeroScene'), {
 const Mobile3DVisual = dynamic(() => import('./Mobile3DVisual'), {
   ssr: false,
   loading: () => (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
+    <div style={{
+      width: '100%',
+      height: '100%',
       background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.2), transparent)',
       borderRadius: '1rem'
     }} />
   )
 });
 
-// Glassmorphism Name Component
-const GlassmorphismName = ({ name }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const letters = name.split('');
+// Typing Title Component with Loop Animation
+const TypingTitle = () => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const fullText = 'Full Stack Developer';
+
+  useEffect(() => {
+    let timeout;
+
+    if (!isDeleting && displayedText === fullText) {
+      // Pause before deleting
+      timeout = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && displayedText === '') {
+      // Pause before typing again
+      timeout = setTimeout(() => setIsDeleting(false), 500);
+    } else if (isDeleting) {
+      // Delete characters
+      timeout = setTimeout(() => {
+        setDisplayedText(prev => prev.slice(0, -1));
+      }, 50);
+    } else {
+      // Type characters
+      timeout = setTimeout(() => {
+        setDisplayedText(prev => fullText.slice(0, prev.length + 1));
+      }, 100);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting]);
 
   return (
-    <div 
+    <h1 className="animate-fade-in" style={{
+      fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+      fontWeight: 800,
+      marginBottom: '0.5rem',
+      color: '#fff',
+      lineHeight: 1.1,
+      textShadow: '0 0 40px rgba(139, 92, 246, 0.3)',
+      minHeight: '1.2em'
+    }}>
+      {displayedText.split('').map((char, i) => {
+        const isGradientPart = i >= 11; // "Developer" starts at index 11
+        return (
+          <span
+            key={i}
+            style={{
+              background: isGradientPart
+                ? 'linear-gradient(135deg, #a855f7, #22d3ee)'
+                : 'none',
+              WebkitBackgroundClip: isGradientPart ? 'text' : 'unset',
+              WebkitTextFillColor: isGradientPart ? 'transparent' : '#fff'
+            }}
+          >
+            {char}
+          </span>
+        );
+      })}
+      <span style={{
+        display: 'inline-block',
+        width: '3px',
+        height: '0.9em',
+        background: 'linear-gradient(135deg, #a855f7, #22d3ee)',
+        marginLeft: '4px',
+        animation: 'cursor-blink 0.8s infinite',
+        verticalAlign: 'middle'
+      }} />
+    </h1>
+  );
+};
+
+// Glassmorphism Name Component with Typing Animation
+const GlassmorphismName = ({ name }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex < name.length) {
+        setDisplayedText(name.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        setIsTypingComplete(true);
+        clearInterval(typingInterval);
+      }
+    }, 100); // 100ms per character
+
+    return () => clearInterval(typingInterval);
+  }, [name]);
+
+  return (
+    <div
       className="name-container"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -76,7 +162,7 @@ const GlassmorphismName = ({ name }) => {
         opacity: isHovered ? 1 : 0.5,
         transition: 'opacity 0.3s ease'
       }} />
-      
+
       {/* Inner background */}
       <div style={{
         position: 'absolute',
@@ -98,7 +184,7 @@ const GlassmorphismName = ({ name }) => {
         zIndex: 1
       }} />
 
-      {/* Name text with letter animation */}
+      {/* Name text with typing animation */}
       <h1 style={{
         fontSize: 'clamp(1.8rem, 2vw, 3rem)',
         fontWeight: 900,
@@ -110,7 +196,7 @@ const GlassmorphismName = ({ name }) => {
         position: 'relative',
         zIndex: 2
       }}>
-        {letters.map((letter, i) => (
+        {displayedText.split('').map((letter, i) => (
           <span
             key={i}
             style={{
@@ -122,15 +208,29 @@ const GlassmorphismName = ({ name }) => {
               backgroundSize: '200% 200%',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              animation: `letter-wave 2s ease infinite, gradient-shift 3s ease infinite`,
-              animationDelay: `${i * 0.05}s, ${i * 0.1}s`,
+              animation: isTypingComplete ? `letter-wave 2s ease infinite, gradient-shift 3s ease infinite` : 'none',
+              animationDelay: isTypingComplete ? `${i * 0.05}s, ${i * 0.1}s` : '0s',
               textShadow: 'none',
-              filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.5))'
+              filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.5))',
+              opacity: 1,
+              transform: 'translateY(0)',
+              transition: 'all 0.1s ease'
             }}
           >
             {letter === ' ' ? '\u00A0' : letter}
           </span>
         ))}
+        {/* Typing cursor */}
+        {!isTypingComplete && (
+          <span style={{
+            display: 'inline-block',
+            width: '3px',
+            height: '1.5em',
+            background: 'linear-gradient(135deg, #a855f7, #22d3ee)',
+            marginLeft: '2px',
+            animation: 'cursor-blink 0.8s infinite'
+          }} />
+        )}
       </h1>
 
       {/* Glow dots */}
@@ -168,16 +268,16 @@ export default function Hero() {
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    
+
     const handleScroll = () => {
       requestAnimationFrame(() => {
         setScrollY(window.scrollY);
       });
     };
-    
+
     window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
@@ -191,7 +291,7 @@ export default function Hero() {
   const scale = Math.max(0.8, 1 - scrollY * 0.0003);
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       style={{
         position: 'relative',
@@ -203,25 +303,25 @@ export default function Hero() {
         background: 'transparent'
       }}
     >
-      <div className="container" style={{ 
-        zIndex: 10, 
+      <div className="container" style={{
+        zIndex: 10,
         padding: '5rem 1rem',
         opacity: opacity,
         transform: `scale(${scale})`,
         willChange: 'transform, opacity'
       }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
-          
+
           {/* Desktop Layout */}
-          <div style={{ 
-            display: isMobile ? 'none' : 'grid', 
-            gridTemplateColumns: '1fr 1fr', 
-            gap: '3rem', 
+          <div style={{
+            display: isMobile ? 'none' : 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '3rem',
             alignItems: 'center',
             marginBottom: '4rem'
           }}>
             {/* Text content with parallax */}
-            <div style={{ 
+            <div style={{
               textAlign: 'left',
               transform: `translateY(${-textParallax}px)`,
               willChange: 'transform'
@@ -239,26 +339,13 @@ export default function Hero() {
               }} className="animate-fade-in">
                 ✨ Available for hire
               </div>
-              
-              {/* Title */}
-              <h1 className="animate-fade-in" style={{
-                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                fontWeight: 800,
-                marginBottom: '0.5rem',
-                color: '#fff',
-                lineHeight: 1.1,
-                textShadow: '0 0 40px rgba(139, 92, 246, 0.3)'
-              }}>
-                Full Stack <span style={{
-                  background: 'linear-gradient(135deg, #a855f7, #22d3ee)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>Developer</span>
-              </h1>
+
+              {/* Title with Typing Animation */}
+              <TypingTitle />
 
               {/* Glassmorphism Name */}
               <GlassmorphismName name="Chisanupong Limsakul" />
-              
+
               <p className="animate-fade-in-delay" style={{
                 fontSize: '1.25rem',
                 color: '#94a3b8',
@@ -270,7 +357,7 @@ export default function Hero() {
                 <span style={{ color: '#22d3ee', fontWeight: 600 }}>maintainable</span> web applications
                 with modern technologies
               </p>
-              
+
               <div className="animate-slide-up" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <a href="#projects" className="btn-primary" style={{ textDecoration: 'none' }}>
                   View Projects →
@@ -280,9 +367,9 @@ export default function Hero() {
                 </a>
               </div>
             </div>
-            
+
             {/* 3D Laptop with parallax */}
-            <div className="animate-fade-in-delay" style={{ 
+            <div className="animate-fade-in-delay" style={{
               height: '550px',
               transform: `translateY(${-laptopParallax}px) rotateX(${scrollY * 0.02}deg)`,
               willChange: 'transform',
@@ -294,8 +381,8 @@ export default function Hero() {
 
           {/* Mobile Layout */}
           <div style={{ display: isMobile ? 'block' : 'none' }}>
-            <div style={{ 
-              textAlign: 'center', 
+            <div style={{
+              textAlign: 'center',
               marginBottom: '2rem',
               transform: `translateY(${-textParallax * 0.5}px)`
             }}>
@@ -311,7 +398,7 @@ export default function Hero() {
               }} className="animate-fade-in">
                 ✨ Available for hire
               </div>
-              
+
               <h1 className="animate-fade-in" style={{
                 fontSize: 'clamp(1.8rem, 8vw, 2.5rem)',
                 fontWeight: 800,
@@ -321,7 +408,7 @@ export default function Hero() {
               }}>
                 Full Stack Developer
               </h1>
-              
+
               {/* Mobile Name */}
               <div style={{
                 padding: '0.75rem 1.5rem',
@@ -345,7 +432,7 @@ export default function Hero() {
                   Chisanupong Limsakul
                 </h2>
               </div>
-              
+
               <p className="animate-fade-in-delay" style={{
                 fontSize: '1rem',
                 color: '#94a3b8',
@@ -354,10 +441,10 @@ export default function Hero() {
                 Building scalable and maintainable web applications
               </p>
             </div>
-            
-            <div className="animate-fade-in-delay" style={{ 
-              height: '16rem', 
-              marginBottom: '2rem', 
+
+            <div className="animate-fade-in-delay" style={{
+              height: '16rem',
+              marginBottom: '2rem',
               maxWidth: '22rem',
               margin: '0 auto 2rem',
               transform: `translateY(${-laptopParallax * 0.3}px)`
@@ -365,7 +452,7 @@ export default function Hero() {
               <Mobile3DVisual />
             </div>
           </div>
-          
+
           {/* Stats Cards with parallax */}
           <div style={{
             display: 'grid',
@@ -416,7 +503,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      
+
       {/* Scroll indicator with parallax */}
       <div style={{
         position: 'absolute',
@@ -453,7 +540,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         @keyframes gradient-shift {
           0%, 100% { background-position: 0% 50%; }
@@ -482,6 +569,10 @@ export default function Hero() {
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        @keyframes cursor-blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
       `}</style>
     </section>
