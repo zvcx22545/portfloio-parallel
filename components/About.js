@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useLanguage } from '@/context/LanguageContext';
 
 const FloatingShapes = dynamic(() => import('./FloatingShapes'), {
   ssr: false,
   loading: () => (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
+    <div style={{
+      width: '100%',
+      height: '100%',
       background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.1), transparent)',
       borderRadius: '1rem'
     }} />
@@ -16,6 +17,7 @@ const FloatingShapes = dynamic(() => import('./FloatingShapes'), {
 });
 
 export default function About() {
+  const { t } = useLanguage();
   const [scrollY, setScrollY] = useState(0);
   const sectionRef = useRef(null);
   const [sectionTop, setSectionTop] = useState(0);
@@ -23,7 +25,7 @@ export default function About() {
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
-    
+
     const handleScroll = () => {
       requestAnimationFrame(() => {
         setScrollY(window.scrollY);
@@ -40,10 +42,10 @@ export default function About() {
     if (sectionRef.current) {
       setSectionTop(sectionRef.current.offsetTop);
     }
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
@@ -55,7 +57,7 @@ export default function About() {
   const contentParallax = relativeScroll * 0.04;
 
   return (
-    <div 
+    <div
       ref={sectionRef}
       style={{
         padding: '6rem 0',
@@ -86,8 +88,8 @@ export default function About() {
         pointerEvents: 'none'
       }} />
 
-      <div className="container" style={{ 
-        position: 'relative', 
+      <div className="container" style={{
+        position: 'relative',
         zIndex: 1,
         maxWidth: '1200px',
         margin: '0 auto',
@@ -101,13 +103,13 @@ export default function About() {
           color: 'white',
           transform: `translateY(${-contentParallax}px)`
         }}>
-          About <span style={{ 
+          {t('about.title')} <span style={{
             background: 'linear-gradient(135deg, #a855f7, #c084fc)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
-          }}>Me</span>
+          }}>{t('about.titleHighlight')}</span>
         </h2>
-        
+
         <div style={{ maxWidth: '64rem', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -116,7 +118,7 @@ export default function About() {
             alignItems: 'center'
           }}>
             {/* 3D Floating Shapes */}
-            <div style={{ 
+            <div style={{
               height: isMobile ? '16rem' : '20rem',
               transform: `translateY(${-shapesParallax}px)`,
               willChange: 'transform',
@@ -124,10 +126,10 @@ export default function About() {
             }}>
               <FloatingShapes />
             </div>
-            
+
             {/* About Content Card */}
-            <div 
-              className="glass-card animate-on-scroll" 
+            <div
+              className="glass-card animate-on-scroll"
               style={{
                 padding: '2rem',
                 borderRadius: '1.5rem',
@@ -159,14 +161,14 @@ export default function About() {
                 </div>
                 <div>
                   <h3 style={{ color: 'white', fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                    Full Stack Developer
+                    {t('about.role')}
                   </h3>
                   <p style={{ color: '#a855f7', fontSize: '0.875rem', fontWeight: 500 }}>
-                    1+ Year Experience
+                    {t('about.experienceText')}
                   </p>
                 </div>
               </div>
-              
+
               {/* About Text */}
               <p style={{
                 color: '#e2e8f0',
@@ -174,18 +176,18 @@ export default function About() {
                 lineHeight: 1.7,
                 marginBottom: '1rem'
               }}>
-                สวัสดีครับ! ผมเป็น Full Stack Developer ที่หลงใหลในการสร้าง Web Application ที่มีประสิทธิภาพและใช้งานง่าย
+                {t('about.description1')}
               </p>
-              
+
               <p style={{
                 color: '#94a3b8',
                 fontSize: '0.9375rem',
                 lineHeight: 1.7,
                 marginBottom: '1.5rem'
               }}>
-                มีประสบการณ์ในการพัฒนาระบบด้วย Vue.js, React.js, Express.js และฐานข้อมูล Oracle/MySQL
+                {t('about.description2')}
               </p>
-              
+
               {/* Tech Tags */}
               <div style={{
                 display: 'flex',

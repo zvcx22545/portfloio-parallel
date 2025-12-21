@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useLanguage } from '@/context/LanguageContext';
 
 const ThreeHeroScene = dynamic(() => import('./ThreeHeroScene'), {
   ssr: false,
@@ -261,6 +262,7 @@ const GlassmorphismName = ({ name }) => {
 };
 
 export default function Hero() {
+  const { t, language } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const sectionRef = useRef(null);
@@ -337,7 +339,7 @@ export default function Hero() {
                 color: '#c4b5fd',
                 backdropFilter: 'blur(10px)'
               }} className="animate-fade-in">
-                ✨ Available for hire
+                {t('hero.availableForHire')}
               </div>
 
               {/* Title with Typing Animation */}
@@ -353,17 +355,27 @@ export default function Hero() {
                 lineHeight: 1.6,
                 maxWidth: '500px'
               }}>
-                Building <span style={{ color: '#a855f7', fontWeight: 600 }}>scalable</span> and{' '}
-                <span style={{ color: '#22d3ee', fontWeight: 600 }}>maintainable</span> web applications
-                with modern technologies
+                {language === 'th' ? (
+                  <>
+                    สร้าง <span style={{ color: '#a855f7', fontWeight: 600 }}>{t('hero.scalable')}</span> และ{' '}
+                    <span style={{ color: '#22d3ee', fontWeight: 600 }}>{t('hero.maintainable')}</span> Web Application
+                    ด้วยเทคโนโลยีสมัยใหม่
+                  </>
+                ) : (
+                  <>
+                    Building <span style={{ color: '#a855f7', fontWeight: 600 }}>{t('hero.scalable')}</span> and{' '}
+                    <span style={{ color: '#22d3ee', fontWeight: 600 }}>{t('hero.maintainable')}</span> web applications
+                    with modern technologies
+                  </>
+                )}
               </p>
 
               <div className="animate-slide-up" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <a href="#projects" className="btn-primary" style={{ textDecoration: 'none' }}>
-                  View Projects →
+                  {t('hero.viewProjects')}
                 </a>
                 <a href="#contact" className="btn-secondary" style={{ textDecoration: 'none' }}>
-                  Contact Me
+                  {t('hero.contactMe')}
                 </a>
               </div>
             </div>
@@ -396,7 +408,7 @@ export default function Hero() {
                 fontSize: '0.75rem',
                 color: '#c4b5fd'
               }} className="animate-fade-in">
-                ✨ Available for hire
+                {t('hero.availableForHire')}
               </div>
 
               <h1 className="animate-fade-in" style={{
@@ -406,7 +418,7 @@ export default function Hero() {
                 color: '#fff',
                 lineHeight: 1.2
               }}>
-                Full Stack Developer
+                {t('hero.title')}
               </h1>
 
               {/* Mobile Name */}
@@ -438,7 +450,7 @@ export default function Hero() {
                 color: '#94a3b8',
                 padding: '0 1.5rem'
               }}>
-                Building scalable and maintainable web applications
+                {t('hero.description')}
               </p>
             </div>
 
@@ -477,9 +489,9 @@ export default function Hero() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '0.5rem'
-              }}>1+ Year</div>
+              }}>{t('hero.experience')}</div>
               <div style={{ color: '#c4b5fd', fontSize: isMobile ? '0.875rem' : '1rem' }}>
-                Real-World Experience
+                {t('hero.realWorldExp')}
               </div>
             </div>
             <div className="glass-card animate-slide-up-delay" style={{
@@ -495,9 +507,9 @@ export default function Hero() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '0.5rem'
-              }}>Frontend + Backend</div>
+              }}>{t('hero.frontendBackend')}</div>
               <div style={{ color: '#a5f3fc', fontSize: isMobile ? '0.875rem' : '1rem' }}>
-                + Database Integration
+                {t('hero.databaseIntegration')}
               </div>
             </div>
           </div>
@@ -518,7 +530,7 @@ export default function Hero() {
           alignItems: 'center',
           gap: '0.5rem'
         }}>
-          <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>Scroll to explore</span>
+          <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{t('hero.scrollToExplore')}</span>
           <div className="animate-bounce" style={{
             width: '24px',
             height: '40px',

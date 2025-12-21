@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import GlobalBackground from '@/components/GlobalBackground';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,10 +22,12 @@ export default function RootLayout({ children }) {
     return (
         <html lang="th">
             <body className={inter.className} style={{ background: '#050510', minHeight: '100vh' }}>
-                <GlobalBackground />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    {children}
-                </div>
+                <LanguageProvider>
+                    <GlobalBackground />
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                        {children}
+                    </div>
+                </LanguageProvider>
             </body>
         </html>
     );
