@@ -26,6 +26,13 @@ export default function Contact() {
   ]);
   const [isSending, setIsSending] = useState(false);
 
+  // Initialize EmailJS on component mount
+  useEffect(() => {
+    if (EMAILJS_PUBLIC_KEY) {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       requestAnimationFrame(() => {
@@ -127,19 +134,44 @@ export default function Contact() {
       // Check if EmailJS is configured
       if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
         try {
+          // Log configuration for debugging (remove in production)
+          console.log("EmailJS Config:", {
+            serviceId: EMAILJS_SERVICE_ID,
+            templateId: EMAILJS_TEMPLATE_ID,
+            publicKey: EMAILJS_PUBLIC_KEY ? "Set" : "Not set"
+          });
+
+          // Get custom fields (fields without fieldKey - added by user)
+          const customFields = formFields.filter(field => !field.fieldKey && field.value.trim());
+
+          // Build message with custom fields included
+          let fullMessage = getFieldValue("message");
+
+          if (customFields.length > 0) {
+            const customFieldsText = customFields
+              .map(field => `${field.label}: ${field.value}`)
+              .join("\n");
+            fullMessage += "\n\n--- ข้อมูลเพิ่มเติม ---\n" + customFieldsText;
+          }
+
+          const templateParams = {
+            name: getFieldValue("name"),
+            email: getFieldValue("email"),
+            title: getFieldValue("title"),
+            message: fullMessage,
+            time: currentTime,
+          };
+
+          console.log("Template Params:", templateParams);
+
           // Send email with template parameters matching EmailJS template
-          await emailjs.send(
+          const response = await emailjs.send(
             EMAILJS_SERVICE_ID,
             EMAILJS_TEMPLATE_ID,
-            {
-              name: getFieldValue("name"),
-              email: getFieldValue("email"),
-              title: getFieldValue("title"),
-              message: getFieldValue("message"),
-              time: currentTime,
-            },
-            EMAILJS_PUBLIC_KEY
+            templateParams
           );
+
+          console.log("EmailJS Success:", response);
 
           await Swal.fire({
             icon: "success",
@@ -154,11 +186,21 @@ export default function Contact() {
           setIsEmailModalOpen(false);
           clearAllFields();
         } catch (emailError) {
-          console.error("EmailJS Error:", emailError);
+          console.error("EmailJS Error Details:", {
+            message: emailError?.message || emailError,
+            text: emailError?.text,
+            status: emailError?.status,
+            fullError: emailError
+          });
           throw new Error("EmailJS failed, falling back to mailto");
         }
       } else {
         // Fallback to mailto if EmailJS not configured
+        const emailBody = formFields
+          .filter(field => field.value.trim())
+          .map(field => `${field.label}: ${field.value}`)
+          .join("\n\n");
+
         const subject = encodeURIComponent("ข้อเสนองาน / Job Opportunity");
         const body = encodeURIComponent(emailBody);
 
