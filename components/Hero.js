@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
+import { personalInfo } from '@/data/siteData';
 
 export default function Hero() {
   const { t, language } = useLanguage();
@@ -49,7 +50,7 @@ export default function Hero() {
               className="inline-block px-5 py-2.5 mb-5 bg-violet-500/10 border border-violet-500/25 rounded-xl backdrop-blur-sm"
             >
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-violet-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent">
-                {language === 'th' ? 'ชิษณุพงศ์ ลิ้มสกุล' : 'Chisanupong Limsakul'}
+                {personalInfo.name[language]}
               </h2>
             </motion.div>
 

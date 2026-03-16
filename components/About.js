@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
+import { personalInfo, techTags, careerGoals } from '@/data/siteData';
 
 export default function About() {
   const { t, language } = useLanguage();
@@ -44,7 +45,7 @@ export default function About() {
                 </div>
                 <div>
                   <h3 className="text-white text-lg font-bold">
-                    {language === 'th' ? 'ชิษณุพงศ์ ลิ้มสกุล' : 'Chisanupong Limsakul'}
+                    {personalInfo.name[language]}
                   </h3>
                   <p className="text-violet-400 text-sm font-medium">{t('about.role')}</p>
                 </div>
@@ -54,31 +55,31 @@ export default function About() {
               <div className="space-y-3 mb-5">
                 <div className="flex items-center gap-3 text-slate-300 text-sm">
                   <span className="text-base">📧</span>
-                  <span>chisanupong.limsakul@gmail.com</span>
+                  <span>{personalInfo.email}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-300 text-sm">
                   <span className="text-base">📱</span>
-                  <span>098-990-4873</span>
+                  <span>{personalInfo.phone}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-300 text-sm">
                   <span className="text-base">📍</span>
-                  <span>{language === 'th' ? '4 หมู่ 5 ห้วยพระ อ.ดอนตูม จ.นครปฐม' : 'Nakhon Pathom, Thailand'}</span>
+                  <span>{personalInfo.address[language]}</span>
                 </div>
               </div>
 
               {/* Language Skills */}
               <div className="pt-4 border-t border-white/10">
                 <h4 className="text-white text-sm font-semibold mb-3">
-                  {language === 'th' ? 'ทักษะทางภาษา' : 'Language Skills'}
+                  {t('about.languageSkills')}
                 </h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-300">🇹🇭 {language === 'th' ? 'ภาษาไทย' : 'Thai'}</span>
-                    <span className="text-violet-300 font-medium">{language === 'th' ? 'ภาษาแม่' : 'Native'}</span>
+                    <span className="text-slate-300">🇹🇭 {t('about.thai')}</span>
+                    <span className="text-violet-300 font-medium">{t('about.thaiLevel')}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-300">🇬🇧 {language === 'th' ? 'ภาษาอังกฤษ' : 'English'}</span>
-                    <span className="text-cyan-300 font-medium">{language === 'th' ? 'ปานกลาง' : 'Intermediate'}</span>
+                    <span className="text-slate-300">🇬🇧 {t('about.english')}</span>
+                    <span className="text-cyan-300 font-medium">{t('about.englishLevel')}</span>
                   </div>
                 </div>
               </div>
@@ -96,40 +97,29 @@ export default function About() {
             <div className="rounded-2xl bg-gradient-to-br from-violet-500/5 to-cyan-500/5 border border-white/10 p-6 sm:p-7 backdrop-blur-sm h-full">
               <h3 className="text-white text-lg font-bold mb-4 flex items-center gap-2">
                 <span className="w-1 h-6 bg-gradient-to-b from-violet-400 to-cyan-400 rounded-full" />
-                {language === 'th' ? 'เกี่ยวกับฉัน' : 'About Me'}
+                {t('about.aboutMe')}
               </h3>
 
               <p className="text-slate-200 text-[15px] leading-7 mb-4">
-                {language === 'th'
-                  ? 'ชอบพัฒนาตัวเองในด้านการเขียนโปรแกรม และ สามารถทำงานเป็นทีมได้เข้ากับผู้อื่นได้ง่าย พร้อมที่จะเรียนรู้เครื่องมือหรือภาษาใหม่ๆ เสนอเพื่อนำมาต่อยอดและพัฒนาตนเอง เพื่อเป็นประโยชน์ให้แก่องค์กร'
-                  : 'Passionate about programming and self-development. A strong team player who adapts easily to new environments. Always eager to learn new tools and technologies to contribute effectively to the organization.'}
+                {t('about.description')}
               </p>
 
               {/* Goals */}
               <h4 className="text-white text-base font-semibold mb-3 mt-5 flex items-center gap-2">
-                🎯 {language === 'th' ? 'จุดมุ่งหมายในการทำงาน' : 'Career Goals'}
+                🎯 {t('about.careerGoals')}
               </h4>
               <ul className="space-y-2 mb-5">
-                {(language === 'th' 
-                  ? [
-                    'เพื่อพัฒนาทักษะการเขียนโปรแกรม และหาประสบการณ์การทำงานเพื่อเพิ่มศักยภาพตนเองในด้านต่างๆ',
-                    'อยากพัฒนาตนเองในด้านการทำงานเป็นทีม และเรียนรู้ในองค์กรทั้งด้าน ความคิด การทำงาน การวางแผนการทำงาน'
-                  ]
-                  : [
-                    'To develop programming skills and gain real-world experience to enhance capabilities',
-                    'To grow through teamwork, learn organizational practices, and improve project planning skills'
-                  ]
-                ).map((goal, i) => (
+                {careerGoals.map((goal, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-slate-300 text-sm leading-6">
                     <span className="text-violet-400 mt-1 flex-shrink-0">•</span>
-                    <span>{goal}</span>
+                    <span>{goal[language]}</span>
                   </li>
                 ))}
               </ul>
 
               {/* Tech Tags */}
               <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                {['HTML', 'CSS', 'JavaScript', 'Vue.js', 'React', 'Next.js', 'MySQL', 'Oracle', 'Git'].map((tech, i) => (
+                {techTags.map((tech, i) => (
                   <span
                     key={i}
                     className="px-3 py-1 text-xs font-medium text-violet-300 bg-violet-500/15 border border-violet-500/20 rounded-full"

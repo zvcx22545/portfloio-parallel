@@ -1,45 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
-const skills = [
-  {
-    category: 'Frontend',
-    icon: '🎨',
-    items: ['HTML', 'CSS', 'JavaScript', 'Vue.js', 'React', 'Next.js', 'Bootstrap 5', 'Tailwind CSS'],
-    gradient: 'from-violet-500 to-violet-600',
-    borderColor: 'border-violet-500/20',
-    bgColor: 'bg-violet-500/8',
-    dotColor: 'bg-violet-400'
-  },
-  {
-    category: 'Backend',
-    icon: '⚙️',
-    items: ['Node.js', 'Express.js', 'REST API', 'PHP (PDO)'],
-    gradient: 'from-cyan-500 to-cyan-600',
-    borderColor: 'border-cyan-500/20',
-    bgColor: 'bg-cyan-500/8',
-    dotColor: 'bg-cyan-400'
-  },
-  {
-    category: 'Database',
-    icon: '🗄️',
-    items: ['MySQL (Basic)', 'Oracle', 'SQL Query'],
-    gradient: 'from-pink-500 to-pink-600',
-    borderColor: 'border-pink-500/20',
-    bgColor: 'bg-pink-500/8',
-    dotColor: 'bg-pink-400'
-  },
-  {
-    category: 'Tools',
-    icon: '🔧',
-    items: ['Git', 'GitHub', 'Postman', 'Figma (Basic)'],
-    gradient: 'from-blue-500 to-blue-600',
-    borderColor: 'border-blue-500/20',
-    bgColor: 'bg-blue-500/8',
-    dotColor: 'bg-blue-400'
-  }
-];
+import { useLanguage } from '@/context/LanguageContext';
+import { skills } from '@/data/siteData';
 
 const containerVariants = {
   hidden: {},
@@ -52,6 +15,8 @@ const itemVariants = {
 };
 
 export default function Skills() {
+  const { t } = useLanguage();
+
   return (
     <div className="py-20 sm:py-24 relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
@@ -62,9 +27,9 @@ export default function Skills() {
           transition={{ duration: 0.5 }}
           className="text-3xl sm:text-4xl font-extrabold text-center mb-3 text-white"
         >
-          What I Use in{' '}
+          {t('skills.title')}{' '}
           <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-            Real Projects
+            {t('skills.titleHighlight')}
           </span>
         </motion.h2>
 
@@ -75,7 +40,7 @@ export default function Skills() {
           transition={{ delay: 0.1 }}
           className="text-center text-slate-500 mb-10 sm:mb-12 text-sm sm:text-base"
         >
-          Technologies I work with daily
+          {t('skills.subtitle')}
         </motion.p>
 
         <motion.div
@@ -115,7 +80,7 @@ export default function Skills() {
               {/* Count */}
               <div className="mt-4 px-3 py-1 bg-white/5 rounded-full inline-flex items-center gap-1.5 text-xs text-slate-400">
                 <span className="text-violet-400 font-semibold">{skill.items.length}</span>
-                technologies
+                {t('skills.technologies')}
               </div>
             </motion.div>
           ))}
