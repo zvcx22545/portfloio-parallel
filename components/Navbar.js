@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const navLinksData = [
@@ -12,6 +12,8 @@ const navLinksData = [
   { href: '#education', labelKey: 'education' },
   { href: '#contact', labelKey: 'contact' }
 ];
+
+const sectionIds = navLinksData.map(link => link.href.substring(1)).reverse();
 
 function LanguageToggle({ language, onToggle }) {
   return (
@@ -54,23 +56,28 @@ export default function Navbar() {
   }));
 
   useEffect(() => {
+    let rafId = null;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      const sections = navLinksData.map(link => link.href.substring(1));
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 300) {
+      if (rafId) return; // skip if already scheduled
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        setIsScrolled(window.scrollY > 50);
+        for (const section of sectionIds) {
+          const element = document.getElementById(section);
+          if (element && element.getBoundingClientRect().top <= 300) {
             setActiveSection(section);
             break;
           }
         }
-      }
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleNavClick = (e, href) => {

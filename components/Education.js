@@ -33,7 +33,7 @@ export default function Education() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className={`rounded-xl ${colors.bg} ${colors.border} border p-6 backdrop-blur-sm hover:scale-[1.02] transition-transform duration-300`}
+                className={`rounded-xl ${colors.bg} ${colors.border} border p-6 hover:scale-[1.02] transition-transform duration-300`}
               >
                 {/* Period Badge */}
                 <div className={`inline-block px-3 py-1 mb-4 text-xs font-bold rounded-full ${colors.periodBadge}`}>

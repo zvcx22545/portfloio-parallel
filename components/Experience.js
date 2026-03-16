@@ -44,7 +44,7 @@ export default function Experience() {
                   <div className={`absolute left-2 sm:left-4 top-6 w-4 h-4 rounded-full ${colors.dot} border-2 border-[#0a0a1a] shadow-lg z-10`} />
 
                   {/* Card */}
-                  <div className={`rounded-xl ${colors.bg} ${colors.border} border p-5 sm:p-6 backdrop-blur-sm hover:scale-[1.01] transition-transform duration-300`}>
+                  <div className={`rounded-xl ${colors.bg} ${colors.border} border p-5 sm:p-6 hover:scale-[1.01] transition-transform duration-300`}>
                     <h3 className="text-white text-base sm:text-lg font-bold mb-2">
                       {exp.title[language]}
                     </h3>

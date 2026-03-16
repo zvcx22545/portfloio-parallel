@@ -46,7 +46,7 @@ export default function Projects() {
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                 onClick={() => setSelectedProject(project)}
-                className={`rounded-xl ${colors.bg} ${colors.borderHover} border p-5 sm:p-6 backdrop-blur-sm cursor-pointer hover:scale-[1.02] transition-all duration-300 group`}
+                className={`rounded-xl ${colors.bg} ${colors.borderHover} border p-5 sm:p-6 cursor-pointer hover:scale-[1.02] transition-all duration-300 group`}
               >
                 {/* Project Icon */}
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.accent} flex items-center justify-center text-lg shadow-lg mb-4`}>

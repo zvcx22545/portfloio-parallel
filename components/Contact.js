@@ -33,7 +33,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="rounded-2xl bg-gradient-to-br from-cyan-500/8 to-violet-500/5 border border-cyan-500/20 p-6 sm:p-7 backdrop-blur-sm"
+            className="rounded-2xl bg-gradient-to-br from-cyan-500/8 to-violet-500/5 border border-cyan-500/20 p-6 sm:p-7"
           >
             <h3 className="text-white text-lg font-bold mb-5 flex items-center gap-2">
               <span className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-violet-400 rounded-full" />
@@ -73,7 +73,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="rounded-2xl bg-gradient-to-br from-violet-500/8 to-cyan-500/5 border border-violet-500/20 p-6 sm:p-7 backdrop-blur-sm flex flex-col justify-center items-center text-center"
+            className="rounded-2xl bg-gradient-to-br from-violet-500/8 to-cyan-500/5 border border-violet-500/20 p-6 sm:p-7 flex flex-col justify-center items-center text-center"
           >
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-2xl mb-5 shadow-lg shadow-violet-500/20">
               ✉️

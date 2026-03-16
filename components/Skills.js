@@ -54,7 +54,7 @@ export default function Skills() {
             <motion.div
               key={idx}
               variants={itemVariants}
-              className={`rounded-xl ${skill.bgColor} ${skill.borderColor} border p-5 sm:p-6 backdrop-blur-sm hover:border-opacity-50 transition-all duration-300 hover:scale-[1.02]`}
+              className={`rounded-xl ${skill.bgColor} ${skill.borderColor} border p-5 sm:p-6 hover:border-opacity-50 transition-all duration-300 hover:scale-[1.02]`}
             >
               {/* Header */}
               <div className="flex items-center gap-3 mb-4">
