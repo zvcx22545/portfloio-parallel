@@ -114,7 +114,7 @@ export const experiences = [
       th: 'มีส่วนร่วมในการพัฒนา และ แก้ไขปัญหา (Bug fixing) ของระบบบริจาคโลหิตของสภากาชาดไทย',
       en: 'Contributed to development and bug fixing for the Thai Red Cross Blood Donation System',
     },
-    tech: ['Bug Fixing', 'Development'],
+    tech: ['Vue js', 'Node js', 'MySQL', 'Oracle', 'Express Js'],
     color: 'cyan',
   },
 ];
