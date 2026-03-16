@@ -83,11 +83,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
-          isScrolled
+        className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${isScrolled
             ? 'py-2.5 bg-[#0a0a1a]/85 backdrop-blur-xl border-b border-violet-500/10'
             : 'py-3 bg-transparent'
-        }`}
+          }`}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           {/* Logo */}
@@ -100,7 +99,7 @@ export default function Navbar() {
               {'</>'}
             </span>
             <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent font-bold">
-              Portfolio
+              DREAM
             </span>
           </a>
 
@@ -111,11 +110,10 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium no-underline transition-all duration-200 ${
-                  activeSection === link.href.substring(1)
+                className={`px-3 py-1.5 rounded-full text-sm font-medium no-underline transition-all duration-200 ${activeSection === link.href.substring(1)
                     ? 'text-white bg-violet-500/20 border border-violet-500/30'
                     : 'text-slate-400 hover:text-white border border-transparent'
-                }`}
+                  }`}
               >
                 {link.label}
               </a>
@@ -153,9 +151,8 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className={`px-6 py-3 text-xl font-semibold no-underline transition-colors ${
-                activeSection === link.href.substring(1) ? 'text-violet-400' : 'text-white'
-              }`}
+              className={`px-6 py-3 text-xl font-semibold no-underline transition-colors ${activeSection === link.href.substring(1) ? 'text-violet-400' : 'text-white'
+                }`}
             >
               {link.label}
             </a>
