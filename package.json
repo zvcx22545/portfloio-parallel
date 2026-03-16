@@ -10,13 +10,11 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
-    "@react-three/drei": "^9.92.7",
-    "@react-three/fiber": "^8.15.19",
+    "framer-motion": "^11.0.0",
     "next": "^15.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sweetalert2": "^11.26.10",
-    "three": "^0.160.0"
+    "sweetalert2": "^11.26.10"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

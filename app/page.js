@@ -7,6 +7,7 @@ import About from '@/components/About';
 import Skills from '@/components/Skills';
 import Experience from '@/components/Experience';
 import Projects from '@/components/Projects';
+import Education from '@/components/Education';
 import Contact from '@/components/Contact';
 
 export default function Home() {
@@ -49,20 +50,17 @@ export default function Home() {
         <section id="projects">
           <Projects />
         </section>
+        <section id="education">
+          <Education />
+        </section>
         <section id="contact">
           <Contact />
         </section>
 
-        <footer style={{
-          padding: '2rem 0',
-          textAlign: 'center',
-          color: '#6b7280',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-          background: '#0a0a1a'
-        }}>
-          <p>© 2024 Full Stack Developer Portfolio</p>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#4b5563' }}>
-            Built with Next.js & Three.js
+        <footer className="py-8 text-center text-slate-500 border-t border-white/5 bg-[#050510]">
+          <p className="text-sm">© 2024 Chisanupong Limsakul - Portfolio</p>
+          <p className="mt-1 text-xs text-slate-600">
+            Built with Next.js & Framer Motion
           </p>
         </footer>
       </main>

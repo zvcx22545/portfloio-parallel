@@ -1,505 +1,237 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 
 const projects = [
   {
-    title: 'Internal Management System',
-    problem: 'องค์กรต้องการระบบจัดการภายในที่มีประสิทธิภาพ',
-    solution: 'พัฒนา Full Stack Web Application ด้วย Vue.js, Express.js และ Oracle',
-    tech: ['Vue.js', 'Express.js', 'Oracle', 'REST API'],
-    result: 'ลดเวลาการทำงาน 40% และเพิ่มความแม่นยำของข้อมูล',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
+    title: { th: 'Mybeer Landing Page', en: 'Mybeer Landing Page' },
+    description: {
+      th: 'ทำ Landing Page สำหรับ Mybeer เพื่อนำเสนอสินค้าและบริการ โดยใช้ HTML CSS JS jQuery',
+      en: 'Created a Landing Page for Mybeer to showcase products and services using HTML, CSS, JS, jQuery'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    link: 'https://myworld-virtual-store.com/present/',
+    github: null,
+    color: 'violet'
   },
   {
-    title: 'Data Dashboard',
-    problem: 'ต้องการ Dashboard แสดงข้อมูลแบบ Real-time',
-    solution: 'สร้าง Dashboard ด้วย React.js และ Express API เชื่อมกับ MySQL',
-    tech: ['React.js', 'Express.js', 'MySQL', 'Chart.js'],
-    result: 'ผู้บริหารสามารถติดตามข้อมูลได้ทันที',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80'
+    title: { th: 'โปรเจกต์จบ - Web Project', en: 'Graduation Web Project' },
+    description: {
+      th: 'โปรเจกต์เอกสารการศึกษา ใช้ HTML CSS JS PHP (PDO) ในการออกแบบหน้าเว็บ และเชื่อมต่อฐานข้อมูล',
+      en: 'A document management system using HTML, CSS, JS, PHP (PDO) with database connection and web design'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'PHP', 'PDO', 'MySQL'],
+    link: null,
+    github: 'https://github.com/zvcx22545/Webproject',
+    color: 'cyan'
   },
   {
-    title: 'REST API Service',
-    problem: 'ระบบต้องการ API ที่ปลอดภัยและรวดเร็ว',
-    solution: 'ออกแบบและพัฒนา RESTful API ด้วย Express.js และ Knex.js',
-    tech: ['Express.js', 'Knex.js', 'MySQL', 'JWT'],
-    result: 'API รองรับ 1000+ requests/วินาที',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'
-  },
-  {
-    title: 'E-Commerce Platform',
-    problem: 'ต้องการระบบขายสินค้าออนไลน์ที่รวดเร็วและปลอดภัย',
-    solution: 'สร้าง E-Commerce ด้วย Next.js และ Express.js รองรับ Payment Gateway',
-    tech: ['Next.js', 'Express.js', 'MySQL', 'Stripe'],
-    result: 'รองรับผู้ใช้ 10,000+ คนพร้อมกัน',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80'
-  },
-  {
-    title: 'Real-time Chat Application',
-    problem: 'ต้องการระบบแชทแบบ Real-time สำหรับทีม',
-    solution: 'พัฒนา Chat App ด้วย React และ WebSocket',
-    tech: ['React.js', 'Socket.io', 'Node.js', 'MongoDB'],
-    result: 'ส่งข้อความได้ภายใน 100ms',
-    image: 'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=800&q=80'
+    title: { th: 'ระบบแลกสินค้า Mybeer', en: 'Mybeer Exchange System' },
+    description: {
+      th: 'ระบบเว็บแลกสินค้าด้วยคะแนน ตะกร้า และระบบสั่งซื้อสินค้า พัฒนาด้วย HTML CSS JS jQuery',
+      en: 'Product exchange system with points, shopping cart, and ordering built with HTML, CSS, JS, jQuery'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    link: null,
+    github: null,
+    color: 'pink'
   }
 ];
 
+const colorMap = {
+  violet: {
+    badge: 'bg-violet-500/15 border-violet-500/20 text-violet-300',
+    border: 'border-violet-500/20 hover:border-violet-500/40',
+    bg: 'bg-violet-500/5',
+    accent: 'from-violet-500 to-violet-600',
+  },
+  cyan: {
+    badge: 'bg-cyan-500/15 border-cyan-500/20 text-cyan-300',
+    border: 'border-cyan-500/20 hover:border-cyan-500/40',
+    bg: 'bg-cyan-500/5',
+    accent: 'from-cyan-500 to-cyan-600',
+  },
+  pink: {
+    badge: 'bg-pink-500/15 border-pink-500/20 text-pink-300',
+    border: 'border-pink-500/20 hover:border-pink-500/40',
+    bg: 'bg-pink-500/5',
+    accent: 'from-pink-500 to-pink-600',
+  }
+};
+
 export default function Projects() {
+  const { language } = useLanguage();
   const [selectedProject, setSelectedProject] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isAutoPlay) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % projects.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlay]);
-
-  const nextSlide = () => {
-    setIsAutoPlay(false);
-    setCurrentIndex((prev) => (prev + 1) % projects.length);
-  };
-
-  const prevSlide = () => {
-    setIsAutoPlay(false);
-    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
-  };
-
-  const getCardStyle = (index) => {
-    const diff = index - currentIndex;
-    const totalProjects = projects.length;
-
-    let normalizedDiff = diff;
-    if (Math.abs(diff) > totalProjects / 2) {
-      normalizedDiff = diff > 0 ? diff - totalProjects : diff + totalProjects;
-    }
-
-    const isCenter = normalizedDiff === 0;
-
-    const rotation = normalizedDiff * (isMobile ? 10 : 15);
-    const translateX = normalizedDiff * (isMobile ? 200 : 320);
-    const translateZ = isCenter ? 0 : (isMobile ? -150 : -300);
-    const scale = isCenter ? 1 : (isMobile ? 0.7 : 0.8);
-    const opacity = Math.abs(normalizedDiff) > 1 ? 0 : 1;
-
-    return {
-      transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotation}deg) scale(${scale})`,
-      opacity: opacity,
-      zIndex: isCenter ? 10 : 5 - Math.abs(normalizedDiff),
-      pointerEvents: isCenter ? 'auto' : 'none'
-    };
-  };
 
   return (
-    <div 
-      ref={sectionRef}
-      style={{
-        padding: '6rem 0',
-        background: 'transparent',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
-    >
-      {/* Background effects */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)',
-        pointerEvents: 'none'
-      }} />
+    <div className="py-20 sm:py-24 relative overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl sm:text-4xl font-extrabold text-center mb-3 text-white"
+        >
+          {language === 'th' ? 'ผลงาน' : 'My'}{' '}
+          <span className="bg-gradient-to-r from-violet-400 to-violet-300 bg-clip-text text-transparent">
+            {language === 'th' ? 'โปรเจกต์' : 'Projects'}
+          </span>
+        </motion.h2>
 
-      <div className="container" style={{
-        position: 'relative',
-        zIndex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 1.5rem'
-      }}>
-        <h2 className="animate-on-scroll" style={{
-          fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
-          fontWeight: 800,
-          textAlign: 'center',
-          marginBottom: isMobile ? '1rem' : '1.5rem',
-          color: 'white'
-        }}>
-          Full Stack <span style={{ 
-            background: 'linear-gradient(135deg, #a855f7, #c084fc)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>Case Studies</span>
-        </h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="text-center text-slate-500 mb-10 sm:mb-12 text-sm sm:text-base"
+        >
+          {language === 'th' ? 'โปรเจกต์ที่ได้ทำจริงจากประสบการณ์การทำงาน' : 'Real projects from work experience'}
+        </motion.p>
 
-        <p className="animate-on-scroll" style={{
-          textAlign: 'center',
-          color: '#9ca3af',
-          marginBottom: isMobile ? '2rem' : '3rem',
-          fontSize: isMobile ? '0.875rem' : '1rem'
-        }}>
-          เลื่อนซ้าย-ขวา หรือคลิกปุ่มเพื่อดูโปรเจกต์ทั้งหมด
-        </p>
-
-        {/* 3D Carousel */}
-        <div style={{
-          position: 'relative',
-          height: isMobile ? '450px' : '550px',
-          marginBottom: '2rem',
-          perspective: '1000px'
-        }}>
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            {projects.map((project, idx) => (
-              <div
+        <div className="grid md:grid-cols-3 gap-5 sm:gap-6">
+          {projects.map((project, idx) => {
+            const colors = colorMap[project.color];
+            return (
+              <motion.div
                 key={idx}
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  padding: '0 1rem',
-                  transition: 'all 0.7s ease-out',
-                  transformStyle: 'preserve-3d',
-                  maxWidth: isMobile ? '280px' : '380px',
-                  ...getCardStyle(idx)
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                onClick={() => setSelectedProject(project)}
+                className={`rounded-xl ${colors.bg} ${colors.border} border p-5 sm:p-6 backdrop-blur-sm cursor-pointer hover:scale-[1.02] transition-all duration-300 group`}
               >
-                <div
-                  className="glass-card"
-                  style={{
-                    borderRadius: isMobile ? '0.75rem' : '1rem',
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    background: 'rgba(15, 15, 35, 0.9)',
-                    border: '1px solid rgba(139, 92, 246, 0.2)'
-                  }}
-                  onClick={() => idx === currentIndex && setSelectedProject(project)}
-                >
-                  <div style={{
-                    position: 'relative',
-                    height: isMobile ? '11rem' : '14rem',
-                    overflow: 'hidden'
-                  }}>
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: 'linear-gradient(to top, #0f0f23 0%, rgba(15, 15, 35, 0.5) 50%, transparent 100%)'
-                    }} />
-                    <div style={{
-                      position: 'absolute',
-                      bottom: isMobile ? '0.75rem' : '1rem',
-                      left: isMobile ? '0.75rem' : '1rem',
-                      right: isMobile ? '0.75rem' : '1rem'
-                    }}>
-                      <h3 style={{
-                        fontSize: isMobile ? '1rem' : '1.25rem',
-                        fontWeight: 700,
-                        color: 'white',
-                        marginBottom: '0.25rem'
-                      }}>{project.title}</h3>
-                    </div>
-                  </div>
-
-                  <div style={{ padding: isMobile ? '0.875rem' : '1.25rem' }}>
-                    <div style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '0.375rem',
-                      marginBottom: isMobile ? '0.625rem' : '0.75rem'
-                    }}>
-                      {project.tech.slice(0, 3).map((t, i) => (
-                        <span key={i} style={{
-                          padding: '0.25rem 0.5rem',
-                          background: 'rgba(139, 92, 246, 0.2)',
-                          border: '1px solid rgba(139, 92, 246, 0.3)',
-                          borderRadius: '9999px',
-                          color: '#c4b5fd',
-                          fontSize: isMobile ? '0.6875rem' : '0.75rem'
-                        }}>
-                          {t}
-                        </span>
-                      ))}
-                      {project.tech.length > 3 && (
-                        <span style={{
-                          padding: '0.25rem 0.5rem',
-                          background: 'rgba(139, 92, 246, 0.2)',
-                          border: '1px solid rgba(139, 92, 246, 0.3)',
-                          borderRadius: '9999px',
-                          color: '#c4b5fd',
-                          fontSize: isMobile ? '0.6875rem' : '0.75rem'
-                        }}>
-                          +{project.tech.length - 3}
-                        </span>
-                      )}
-                    </div>
-                    <p style={{
-                      color: '#9ca3af',
-                      fontSize: isMobile ? '0.75rem' : '0.8125rem'
-                    }}>คลิกเพื่อดูรายละเอียด →</p>
-                  </div>
+                {/* Project Icon */}
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.accent} flex items-center justify-center text-lg shadow-lg mb-4`}>
+                  💻
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Navigation Buttons */}
-          <button
-            onClick={prevSlide}
-            style={{
-              position: 'absolute',
-              left: isMobile ? '0.5rem' : '1rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 20,
-              width: isMobile ? '2.5rem' : '3rem',
-              height: isMobile ? '2.5rem' : '3rem',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: isMobile ? '1rem' : '1.25rem'
-            }}
-          >
-            ←
-          </button>
-          <button
-            onClick={nextSlide}
-            style={{
-              position: 'absolute',
-              right: isMobile ? '0.5rem' : '1rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 20,
-              width: isMobile ? '2.5rem' : '3rem',
-              height: isMobile ? '2.5rem' : '3rem',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: isMobile ? '1rem' : '1.25rem'
-            }}
-          >
-            →
-          </button>
-        </div>
+                <h3 className="text-white text-base font-bold mb-2 group-hover:text-violet-200 transition-colors">
+                  {project.title[language]}
+                </h3>
 
-        {/* Dots */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: isMobile ? '0.5rem' : '0.625rem',
-          marginBottom: isMobile ? '1.25rem' : '1.5rem'
-        }}>
-          {projects.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setCurrentIndex(idx);
-                setIsAutoPlay(false);
-              }}
-              style={{
-                width: idx === currentIndex ? (isMobile ? '1.5rem' : '2rem') : (isMobile ? '0.5rem' : '0.625rem'),
-                height: isMobile ? '0.5rem' : '0.625rem',
-                borderRadius: '9999px',
-                backgroundColor: idx === currentIndex ? '#a855f7' : 'rgba(255, 255, 255, 0.3)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            />
-          ))}
-        </div>
+                <p className="text-slate-400 text-sm leading-6 mb-4 line-clamp-2">
+                  {project.description[language]}
+                </p>
 
-        {/* Auto-play toggle */}
-        <div style={{ textAlign: 'center' }}>
-          <button
-            onClick={() => setIsAutoPlay(!isAutoPlay)}
-            style={{
-              padding: isMobile ? '0.5rem 1rem' : '0.5rem 1.5rem',
-              borderRadius: '9999px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#d1d5db',
-              cursor: 'pointer',
-              fontSize: isMobile ? '0.8125rem' : '0.875rem'
-            }}
-          >
-            {isAutoPlay ? '⏸ หยุดเล่นอัตโนมัติ' : '▶ เล่นอัตโนมัติ'}
-          </button>
+                {/* Tech Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {project.tech.slice(0, 3).map((t, i) => (
+                    <span key={i} className={`px-2 py-0.5 text-[11px] font-medium ${colors.badge} border rounded-full`}>
+                      {t}
+                    </span>
+                  ))}
+                  {project.tech.length > 3 && (
+                    <span className={`px-2 py-0.5 text-[11px] font-medium ${colors.badge} border rounded-full`}>
+                      +{project.tech.length - 3}
+                    </span>
+                  )}
+                </div>
+
+                {/* Links */}
+                <div className="flex gap-2 mt-auto">
+                  {project.link && (
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-violet-300 hover:text-violet-200 transition-colors"
+                    >
+                      🔗 Live
+                    </a>
+                  )}
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-slate-400 hover:text-white transition-colors"
+                    >
+                      📂 GitHub
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
       {/* Modal */}
-      {selectedProject && (
-        <div
-          onClick={() => setSelectedProject(null)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: isMobile ? '1rem' : '1.5rem'
-          }}
-          className="animate-fade-in"
-        >
-          <div
-            className="glass-card animate-scale-in"
-            onClick={e => e.stopPropagation()}
-            style={{
-              maxWidth: '48rem',
-              width: '100%',
-              borderRadius: isMobile ? '1rem' : '1.5rem',
-              background: 'rgba(15, 15, 35, 0.98)',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              overflow: 'hidden',
-              maxHeight: '90vh',
-              overflowY: 'auto'
-            }}
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setSelectedProject(null)}
           >
-            <div style={{
-              position: 'relative',
-              height: isMobile ? '12rem' : '18rem'
-            }}>
-              <img
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover'
-                }}
-              />
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to top, #0f0f23, rgba(15, 15, 35, 0.7), transparent)'
-              }} />
-              <button
-                onClick={() => setSelectedProject(null)}
-                style={{
-                  position: 'absolute',
-                  top: isMobile ? '0.75rem' : '1rem',
-                  right: isMobile ? '0.75rem' : '1rem',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                ×
-              </button>
-              <h3 style={{
-                position: 'absolute',
-                bottom: isMobile ? '1rem' : '1.5rem',
-                left: isMobile ? '1rem' : '1.5rem',
-                fontSize: isMobile ? '1.375rem' : '2rem',
-                fontWeight: 700,
-                color: 'white',
-                paddingRight: '1rem'
-              }}>{selectedProject.title}</h3>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="w-full max-w-lg rounded-2xl bg-[#0f0f23]/98 border border-violet-500/25 p-6 sm:p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-5">
+                <h3 className="text-white text-xl font-bold pr-4">{selectedProject.title[language]}</h3>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg transition-colors flex-shrink-0"
+                >
+                  ×
+                </button>
+              </div>
 
-            <div style={{
-              padding: isMobile ? '1.5rem' : '2rem',
-              color: '#e2e8f0'
-            }}>
-              <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{
-                  fontSize: isMobile ? '1rem' : '1.125rem',
-                  fontWeight: 600,
-                  color: '#a855f7',
-                  marginBottom: '0.5rem'
-                }}>Problem</h4>
-                <p style={{ fontSize: isMobile ? '0.9375rem' : '1rem', lineHeight: 1.6 }}>{selectedProject.problem}</p>
-              </div>
-              <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{
-                  fontSize: isMobile ? '1rem' : '1.125rem',
-                  fontWeight: 600,
-                  color: '#22d3ee',
-                  marginBottom: '0.5rem'
-                }}>Solution</h4>
-                <p style={{ fontSize: isMobile ? '0.9375rem' : '1rem', lineHeight: 1.6 }}>{selectedProject.solution}</p>
-              </div>
-              <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{
-                  fontSize: isMobile ? '1rem' : '1.125rem',
-                  fontWeight: 600,
-                  color: '#ec4899',
-                  marginBottom: '0.5rem'
-                }}>Tech Stack</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p className="text-slate-300 text-sm leading-7 mb-5">
+                {selectedProject.description[language]}
+              </p>
+
+              <div className="mb-5">
+                <h4 className="text-violet-400 text-sm font-semibold mb-2">Tech Stack</h4>
+                <div className="flex flex-wrap gap-2">
                   {selectedProject.tech.map((t, i) => (
-                    <span key={i} style={{
-                      padding: '0.375rem 0.75rem',
-                      background: 'rgba(139, 92, 246, 0.2)',
-                      border: '1px solid rgba(139, 92, 246, 0.3)',
-                      borderRadius: '9999px',
-                      color: '#c4b5fd',
-                      fontSize: '0.8125rem'
-                    }}>{t}</span>
+                    <span key={i} className="px-3 py-1 text-xs font-medium text-violet-300 bg-violet-500/15 border border-violet-500/20 rounded-full">
+                      {t}
+                    </span>
                   ))}
                 </div>
               </div>
-              <div>
-                <h4 style={{
-                  fontSize: isMobile ? '1rem' : '1.125rem',
-                  fontWeight: 600,
-                  color: '#22c55e',
-                  marginBottom: '0.5rem'
-                }}>Result</h4>
-                <p style={{ fontSize: isMobile ? '0.9375rem' : '1rem', lineHeight: 1.6 }}>{selectedProject.result}</p>
+
+              {/* Links */}
+              <div className="flex gap-3 pt-4 border-t border-white/10">
+                {selectedProject.link && (
+                  <a
+                    href={selectedProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 text-white text-sm font-medium hover:shadow-lg transition-all"
+                  >
+                    🔗 {language === 'th' ? 'ดูผลงาน' : 'View Live'}
+                  </a>
+                )}
+                {selectedProject.github && (
+                  <a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-lg bg-white/10 border border-white/15 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+                  >
+                    📂 GitHub
+                  </a>
+                )}
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

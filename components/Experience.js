@@ -1,144 +1,154 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 
 const experiences = [
-  { text: 'พัฒนาระบบภายในองค์กร', delay: '0.1s' },
-  { text: 'ออกแบบ REST API', delay: '0.2s' },
-  { text: 'เขียน Backend ด้วย Express + Knex', delay: '0.3s' },
-  { text: 'ทำงานกับ Oracle และ MySQL', delay: '0.4s' },
-  { text: 'ใช้ GitHub ในการทำงานร่วมกับทีม', delay: '0.5s' }
+  {
+    title: { th: 'เว็บแลกสินค้า Mybeer', en: 'Mybeer E-Commerce Website' },
+    description: {
+      th: 'มีประสบการณ์ในการทำหน้าเว็บแลกสินค้า Mybeer โดยเป็นเว็บที่ต้องนำคะแนนมาแลกสินค้าที่หน้าเว็บ โดยใช้ HTML CSS JS jQuery',
+      en: 'Developed a product exchange web page for Mybeer — a points-based product redemption system using HTML, CSS, JS, jQuery'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    color: 'violet'
+  },
+  {
+    title: { th: 'เว็บสะสมแต้ม / สั่งซื้อสินค้า Mybeer', en: 'Mybeer Points & Shopping System' },
+    description: {
+      th: 'มีประสบการณ์ในการทำเว็บสะสมแต้มจากการซื้อสินค้าของ Mybeer โดยใช้ HTML CSS JS jQuery',
+      en: 'Built a loyalty points collection and product ordering system for Mybeer using HTML, CSS, JS, jQuery'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    color: 'cyan'
+  },
+  {
+    title: { th: 'Landing Page ของ Mybeer', en: 'Mybeer Landing Page' },
+    description: {
+      th: 'มีประสบการณ์ในการทำ Landing Page ของ Mybeer โดยใช้ HTML CSS JS jQuery',
+      en: 'Created a Landing Page for Mybeer using HTML, CSS, JS, jQuery'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    link: 'https://myworld-virtual-store.com/present/',
+    color: 'pink'
+  },
+  {
+    title: { th: 'โปรเจกต์จบการศึกษา', en: 'Web Project (Graduation)' },
+    description: {
+      th: 'ทำโปรเจคเอกสารการศึกษาโดยใช้ HTML CSS JS PHP (PDO) ในการออกแบบหน้าเว็บไซต์ และ เชื่อมต่อฐานข้อมูล',
+      en: 'Built a document management web project using HTML, CSS, JS, PHP (PDO) with database integration'
+    },
+    tech: ['HTML', 'CSS', 'JavaScript', 'PHP', 'PDO'],
+    link: 'https://github.com/zvcx22545/Webproject',
+    color: 'violet'
+  },
+  {
+    title: { th: 'ระบบบริจาคโลหิต (สภากาชาดไทย)', en: 'Blood Donation System (Thai Red Cross)' },
+    description: {
+      th: 'มีส่วนร่วมในการพัฒนา และ แก้ไขปัญหา (Bug fixing) ของระบบบริจาคโลหิตของสภากาชาดไทย',
+      en: 'Contributed to development and bug fixing for the Thai Red Cross Blood Donation System'
+    },
+    tech: ['Bug Fixing', 'Development'],
+    color: 'cyan'
+  }
 ];
 
+const colorMap = {
+  violet: {
+    dot: 'bg-violet-400',
+    line: 'from-violet-400 to-violet-600',
+    badge: 'bg-violet-500/15 border-violet-500/20 text-violet-300',
+    border: 'border-violet-500/20',
+    bg: 'bg-violet-500/5',
+  },
+  cyan: {
+    dot: 'bg-cyan-400',
+    line: 'from-cyan-400 to-cyan-600',
+    badge: 'bg-cyan-500/15 border-cyan-500/20 text-cyan-300',
+    border: 'border-cyan-500/20',
+    bg: 'bg-cyan-500/5',
+  },
+  pink: {
+    dot: 'bg-pink-400',
+    line: 'from-pink-400 to-pink-600',
+    badge: 'bg-pink-500/15 border-pink-500/20 text-pink-300',
+    border: 'border-pink-500/20',
+    bg: 'bg-pink-500/5',
+  }
+};
+
 export default function Experience() {
-  const [scrollY, setScrollY] = useState(0);
-  const sectionRef = useRef(null);
-  const [sectionTop, setSectionTop] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-      });
-    };
-
-    const updateSectionTop = () => {
-      if (sectionRef.current) {
-        setSectionTop(sectionRef.current.offsetTop);
-      }
-    };
-
-    updateSectionTop();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', updateSectionTop);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateSectionTop);
-    };
-  }, []);
-
-  const relativeScroll = Math.max(0, scrollY - sectionTop + 400);
-  const parallax = relativeScroll * 0.03;
+  const { language } = useLanguage();
 
   return (
-    <div 
-      ref={sectionRef}
-      style={{
-        padding: '6rem 0',
-        background: 'transparent',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      {/* Background elements */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.05) 0%, transparent 50%)',
-        pointerEvents: 'none'
-      }} />
+    <div className="py-20 sm:py-24 relative overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl sm:text-4xl font-extrabold text-center mb-10 sm:mb-14 text-white"
+        >
+          {language === 'th' ? 'ประสบการณ์' : 'Work'}{' '}
+          <span className="bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent">
+            {language === 'th' ? 'การทำงาน' : 'Experience'}
+          </span>
+        </motion.h2>
 
-      <div className="container" style={{
-        position: 'relative',
-        zIndex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 1.5rem'
-      }}>
-        <h2 className="animate-on-scroll" style={{
-          fontSize: 'clamp(2rem, 5vw, 3rem)',
-          fontWeight: 800,
-          textAlign: 'center',
-          marginBottom: '3rem',
-          color: 'white',
-          transform: `translateY(${-parallax}px)`
-        }}>
-          What I Have <span style={{ 
-            background: 'linear-gradient(135deg, #22d3ee, #67e8f9)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>Built</span>
-        </h2>
-        
-        <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-          <div 
-            className="glass-card animate-on-scroll" 
-            style={{
-              padding: 'clamp(1.5rem, 5vw, 2.5rem)',
-              borderRadius: '1.5rem',
-              position: 'relative',
-              background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(139, 92, 246, 0.05))',
-              border: '1px solid rgba(34, 211, 238, 0.2)',
-              transform: `translateY(${-parallax * 0.5}px)`
-            }}
-          >
-            {/* Gradient border left */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '4px',
-              height: '100%',
-              background: 'linear-gradient(to bottom, #a855f7, #22d3ee)',
-              borderRadius: '1.5rem 0 0 1.5rem'
-            }} />
-            
-            <h3 style={{
-              fontSize: 'clamp(1.5rem, 4vw, 1.875rem)',
-              fontWeight: 700,
-              color: 'white',
-              marginBottom: '0.5rem',
-              paddingLeft: '1rem'
-            }}>Full Stack Developer</h3>
-            <p style={{
-              color: '#a855f7',
-              fontSize: '1.125rem',
-              marginBottom: '1.5rem',
-              paddingLeft: '1rem',
-              fontWeight: 500
-            }}>1 Year Experience</p>
-            
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, paddingLeft: '1rem' }}>
-              {experiences.map((exp, idx) => (
-                <li key={idx} className="animate-slide-in" style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  color: '#e2e8f0',
-                  fontSize: '1rem',
-                  marginBottom: '1rem',
-                  animationDelay: exp.delay
-                }}>
-                  <span style={{
-                    color: '#22d3ee',
-                    marginRight: '0.75rem',
-                    fontSize: '1.25rem',
-                    lineHeight: 1.4
-                  }}>•</span>
-                  <span style={{ lineHeight: 1.6 }}>{exp.text}</span>
-                </li>
-              ))}
-            </ul>
+        {/* Timeline */}
+        <div className="relative">
+          {/* Timeline Line */}
+          <div className="absolute left-4 sm:left-6 top-0 bottom-0 w-px bg-gradient-to-b from-violet-500/50 via-cyan-500/30 to-transparent" />
+
+          <div className="space-y-6">
+            {experiences.map((exp, idx) => {
+              const colors = colorMap[exp.color];
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-30px' }}
+                  transition={{ duration: 0.4, delay: idx * 0.08 }}
+                  className="relative pl-10 sm:pl-14"
+                >
+                  {/* Timeline Dot */}
+                  <div className={`absolute left-2 sm:left-4 top-6 w-4 h-4 rounded-full ${colors.dot} border-2 border-[#0a0a1a] shadow-lg z-10`} />
+
+                  {/* Card */}
+                  <div className={`rounded-xl ${colors.bg} ${colors.border} border p-5 sm:p-6 backdrop-blur-sm hover:scale-[1.01] transition-transform duration-300`}>
+                    <h3 className="text-white text-base sm:text-lg font-bold mb-2">
+                      {exp.title[language]}
+                    </h3>
+                    <p className="text-slate-300 text-sm leading-6 mb-3">
+                      {exp.description[language]}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {exp.tech.map((t, i) => (
+                        <span
+                          key={i}
+                          className={`px-2.5 py-0.5 text-xs font-medium ${colors.badge} border rounded-full`}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {exp.link && (
+                        <a
+                          href={exp.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-0.5 text-xs font-medium text-white bg-white/10 border border-white/15 rounded-full hover:bg-white/20 transition-colors inline-flex items-center gap-1"
+                        >
+                          🔗 {language === 'th' ? 'ดูผลงาน' : 'View'}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,23 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import emailjs from "@emailjs/browser";
+import { useLanguage } from "@/context/LanguageContext";
 
-// EmailJS Configuration from environment variables
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "";
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
 
 export default function Contact() {
-  const [scrollY, setScrollY] = useState(0);
-  const sectionRef = useRef(null);
-  const [sectionTop, setSectionTop] = useState(0);
+  const { language } = useLanguage();
 
-  // Email Modal State
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [isAddFieldModalOpen, setIsAddFieldModalOpen] = useState(false);
-  const [newFieldLabel, setNewFieldLabel] = useState("");
   const [formFields, setFormFields] = useState([
     { id: 1, label: "ชื่อ-นามสกุล", fieldKey: "name", value: "", placeholder: "กรุณากรอกชื่อ-นามสกุล", required: true },
     { id: 2, label: "อีเมลติดต่อกลับ", fieldKey: "email", value: "", placeholder: "email@example.com", required: true },
@@ -26,61 +22,16 @@ export default function Contact() {
   ]);
   const [isSending, setIsSending] = useState(false);
 
-  // Initialize EmailJS on component mount
   useEffect(() => {
     if (EMAILJS_PUBLIC_KEY) {
       emailjs.init(EMAILJS_PUBLIC_KEY);
     }
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-      });
-    };
-
-    const updateSectionTop = () => {
-      if (sectionRef.current) {
-        setSectionTop(sectionRef.current.offsetTop);
-      }
-    };
-
-    updateSectionTop();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", updateSectionTop);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", updateSectionTop);
-    };
-  }, []);
-
-  const relativeScroll = Math.max(0, scrollY - sectionTop + 400);
-  const parallax = relativeScroll * 0.03;
-
-  // Form handlers
   const handleFieldChange = (id, value) => {
     setFormFields(fields =>
-      fields.map(field =>
-        field.id === id ? { ...field, value } : field
-      )
+      fields.map(field => field.id === id ? { ...field, value } : field)
     );
-  };
-
-  const addNewField = () => {
-    if (!newFieldLabel.trim()) return;
-    const newId = Math.max(...formFields.map(f => f.id), 0) + 1;
-    setFormFields([
-      ...formFields,
-      { id: newId, label: newFieldLabel.trim(), value: "", placeholder: `กรุณากรอก ${newFieldLabel.trim()}`, required: false }
-    ]);
-    setNewFieldLabel("");
-    setIsAddFieldModalOpen(false);
-  };
-
-  const deleteField = (id) => {
-    setFormFields(fields => fields.filter(field => field.id !== id));
   };
 
   const clearAllFields = () => {
@@ -89,8 +40,6 @@ export default function Contact() {
 
   const handleSendEmail = async () => {
     try {
-      // Validate required fields
-      const filledFields = formFields.filter(field => field.value.trim());
       const requiredFields = formFields.filter(field => field.required);
       const emptyRequiredFields = requiredFields.filter(field => !field.value.trim());
 
@@ -107,71 +56,21 @@ export default function Contact() {
         return;
       }
 
-      if (filledFields.length === 0) {
-        await Swal.fire({
-          icon: "warning",
-          title: "ไม่มีข้อมูล",
-          text: "กรุณากรอกข้อมูลอย่างน้อย 1 ช่องก่อนส่ง",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#a855f7",
-          background: "#1a1a2e",
-          color: "#fff",
-        });
-        return;
-      }
-
       setIsSending(true);
-
-      // Get field values by key
       const getFieldValue = (key) => formFields.find(f => f.fieldKey === key)?.value || "";
+      const currentTime = new Date().toLocaleString('th-TH', { dateStyle: 'full', timeStyle: 'short' });
 
-      // Current time for template
-      const currentTime = new Date().toLocaleString('th-TH', {
-        dateStyle: 'full',
-        timeStyle: 'short'
-      });
-
-      // Check if EmailJS is configured
       if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
         try {
-          // Log configuration for debugging (remove in production)
-          console.log("EmailJS Config:", {
-            serviceId: EMAILJS_SERVICE_ID,
-            templateId: EMAILJS_TEMPLATE_ID,
-            publicKey: EMAILJS_PUBLIC_KEY ? "Set" : "Not set"
-          });
-
-          // Get custom fields (fields without fieldKey - added by user)
-          const customFields = formFields.filter(field => !field.fieldKey && field.value.trim());
-
-          // Build message with custom fields included
-          let fullMessage = getFieldValue("message");
-
-          if (customFields.length > 0) {
-            const customFieldsText = customFields
-              .map(field => `${field.label}: ${field.value}`)
-              .join("\n");
-            fullMessage += "\n\n--- ข้อมูลเพิ่มเติม ---\n" + customFieldsText;
-          }
-
           const templateParams = {
             name: getFieldValue("name"),
             email: getFieldValue("email"),
             title: getFieldValue("title"),
-            message: fullMessage,
+            message: getFieldValue("message"),
             time: currentTime,
           };
 
-          console.log("Template Params:", templateParams);
-
-          // Send email with template parameters matching EmailJS template
-          const response = await emailjs.send(
-            EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
-            templateParams
-          );
-
-          console.log("EmailJS Success:", response);
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
 
           await Swal.fire({
             icon: "success",
@@ -186,327 +85,199 @@ export default function Contact() {
           setIsEmailModalOpen(false);
           clearAllFields();
         } catch (emailError) {
-          console.error("EmailJS Error Details:", {
-            message: emailError?.message || emailError,
-            text: emailError?.text,
-            status: emailError?.status,
-            fullError: emailError
-          });
-          throw new Error("EmailJS failed, falling back to mailto");
+          throw new Error("EmailJS failed");
         }
       } else {
-        // Fallback to mailto if EmailJS not configured
-        const emailBody = formFields
-          .filter(field => field.value.trim())
-          .map(field => `${field.label}: ${field.value}`)
-          .join("\n\n");
-
+        const emailBody = formFields.filter(f => f.value.trim()).map(f => `${f.label}: ${f.value}`).join("\n\n");
         const subject = encodeURIComponent("ข้อเสนองาน / Job Opportunity");
         const body = encodeURIComponent(emailBody);
-
         window.location.href = `mailto:chisanupong.limsakul@gmail.com?subject=${subject}&body=${body}`;
-
-        await Swal.fire({
-          icon: "info",
-          title: "เปิดแอพอีเมลแล้ว",
-          text: "กรุณาส่งอีเมลจากแอพอีเมลของคุณ",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#a855f7",
-          background: "#1a1a2e",
-          color: "#fff",
-        });
-
         setIsEmailModalOpen(false);
       }
     } catch (error) {
-      console.error("Send email error:", error);
-
-      // Fallback to mailto
-      const emailBody = formFields
-        .filter(field => field.value.trim())
-        .map(field => `${field.label}: ${field.value}`)
-        .join("\n\n");
-
+      const emailBody = formFields.filter(f => f.value.trim()).map(f => `${f.label}: ${f.value}`).join("\n\n");
       const subject = encodeURIComponent("ข้อเสนองาน / Job Opportunity");
       const body = encodeURIComponent(emailBody);
-
       window.location.href = `mailto:chisanupong.limsakul@gmail.com?subject=${subject}&body=${body}`;
-
-      await Swal.fire({
-        icon: "info",
-        title: "เปิดแอพอีเมลแล้ว",
-        text: "กรุณาส่งอีเมลจากแอพอีเมลของคุณ",
-        confirmButtonText: "ตกลง",
-        confirmButtonColor: "#a855f7",
-        background: "#1a1a2e",
-        color: "#fff",
-      });
-
       setIsEmailModalOpen(false);
     } finally {
       setIsSending(false);
     }
   };
 
+  const contactInfo = [
+    { icon: '📧', label: 'Email', value: 'chisanupong.limsakul@gmail.com', href: 'mailto:chisanupong.limsakul@gmail.com' },
+    { icon: '📱', label: language === 'th' ? 'โทรศัพท์' : 'Phone', value: '098-990-4873', href: 'tel:0989904873' },
+    { icon: '🔗', label: 'GitHub', value: 'github.com/zvcx22545', href: 'https://github.com/zvcx22545' },
+  ];
+
   return (
-    <div
-      ref={sectionRef}
-      className="relative overflow-hidden py-24"
-      style={{
-        background: "transparent",
-      }}
-    >
-      {/* Background effects */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(circle at 50% 100%, rgba(34, 211, 238, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)
-          `,
-        }}
-      />
-
-      <div className="container relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
-        <h2
-          className="animate-on-scroll text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-8 sm:mb-12 text-white"
-          style={{ transform: `translateY(${-parallax}px)` }}
+    <div className="py-20 sm:py-24 relative overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl sm:text-4xl font-extrabold text-center mb-10 sm:mb-14 text-white"
         >
-          Get In{" "}
+          {language === 'th' ? 'ติดต่อ' : 'Get In'}{' '}
           <span className="bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent">
-            Touch
+            {language === 'th' ? 'ฉัน' : 'Touch'}
           </span>
-        </h2>
+        </motion.h2>
 
-        <div className="max-w-md mx-auto">
-          <div
-            className="glass-card animate-on-scroll rounded-2xl sm:rounded-3xl text-center p-6 sm:p-8 md:p-10"
-            style={{
-              background: "linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(139, 92, 246, 0.05))",
-              border: "1px solid rgba(34, 211, 238, 0.2)",
-              transform: `translateY(${-parallax * 0.5}px)`,
-            }}
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          {/* Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="rounded-2xl bg-gradient-to-br from-cyan-500/8 to-violet-500/5 border border-cyan-500/20 p-6 sm:p-7 backdrop-blur-sm"
           >
-            {/* Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-4 sm:mb-6 shadow-lg shadow-purple-500/30">
+            <h3 className="text-white text-lg font-bold mb-5 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-violet-400 rounded-full" />
+              {language === 'th' ? 'ข้อมูลติดต่อ' : 'Contact Info'}
+            </h3>
+
+            <div className="space-y-4 mb-6">
+              {contactInfo.map((info, i) => (
+                <a
+                  key={i}
+                  href={info.href}
+                  target={info.label === 'GitHub' ? '_blank' : undefined}
+                  rel={info.label === 'GitHub' ? 'noopener noreferrer' : undefined}
+                  className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group"
+                >
+                  <span className="text-lg">{info.icon}</span>
+                  <div>
+                    <div className="text-xs text-slate-500">{info.label}</div>
+                    <div className="text-sm font-medium group-hover:text-violet-300 transition-colors">{info.value}</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <p className="text-slate-400 text-sm leading-6">
+              {language === 'th'
+                ? 'พร้อมที่จะร่วมงานหรือมีโปรเจกต์ที่น่าสนใจ? ติดต่อผมได้เลยครับ!'
+                : 'Ready to collaborate or have an interesting project? Feel free to contact me!'}
+            </p>
+          </motion.div>
+
+          {/* CTA Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="rounded-2xl bg-gradient-to-br from-violet-500/8 to-cyan-500/5 border border-violet-500/20 p-6 sm:p-7 backdrop-blur-sm flex flex-col justify-center items-center text-center"
+          >
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-2xl mb-5 shadow-lg shadow-violet-500/20">
               ✉️
             </div>
 
-            <p className="text-gray-200 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-              พร้อมที่จะร่วมงานหรือมีโปรเจกต์ที่น่าสนใจ? ติดต่อผมได้เลยครับ!
+            <h3 className="text-white text-lg font-bold mb-3">
+              {language === 'th' ? 'ส่งข้อความถึงฉัน' : 'Send Me a Message'}
+            </h3>
+
+            <p className="text-slate-400 text-sm mb-6">
+              {language === 'th'
+                ? 'กดปุ่มด้านล่างเพื่อส่งอีเมลเชิญร่วมงาน'
+                : 'Click the button below to send a job invitation email'}
             </p>
 
-            <div className="flex flex-col gap-3 sm:gap-4 items-center">
-              {/* Email Button - Opens Modal */}
-              <button
-                onClick={() => setIsEmailModalOpen(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold text-sm sm:text-base shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-200"
-              >
-                📧 ส่งอีเมลเชิญร่วมงาน
-              </button>
-
-              {/* GitHub Link */}
-              <a
-                href="https://github.com/zvcx22545"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white/5 border border-white/15 text-white font-semibold text-sm sm:text-base hover:bg-white/10 hover:scale-105 transition-all duration-200"
-              >
-                🔗 GitHub
-              </a>
-            </div>
-          </div>
+            <button
+              onClick={() => setIsEmailModalOpen(true)}
+              className="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-violet-500 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-105 transition-all duration-200"
+            >
+              📧 {language === 'th' ? 'ส่งอีเมลเชิญร่วมงาน' : 'Send Job Invitation'}
+            </button>
+          </motion.div>
         </div>
       </div>
 
       {/* Email Modal */}
       {isEmailModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.85)", backdropFilter: "blur(8px)" }}
           onClick={() => setIsEmailModalOpen(false)}
         >
-          <div
-            className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl animate-scale-in"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl"
             style={{
               background: "linear-gradient(135deg, rgba(15, 15, 35, 0.98), rgba(30, 20, 50, 0.95))",
               border: "1px solid rgba(139, 92, 246, 0.3)",
-              backdropFilter: "blur(20px)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
-              <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-2xl">📧</span>
-                <span className="hidden sm:inline">ส่งอีเมลเชิญร่วมงาน</span>
-                <span className="sm:hidden">ส่งอีเมล</span>
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-white/10">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                📧 {language === 'th' ? 'ส่งอีเมลเชิญร่วมงาน' : 'Send Job Invitation'}
               </h3>
               <button
                 onClick={() => setIsEmailModalOpen(false)}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg sm:text-xl transition-colors"
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg transition-colors"
               >
                 ×
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              {/* Scrollable Form Fields Container */}
-              <div
-                style={{
-                  maxHeight: formFields.length > 3 ? '280px' : 'auto',
-                  overflowY: formFields.length > 3 ? 'auto' : 'visible',
-                  paddingRight: formFields.length > 3 ? '8px' : '0'
-                }}
-                className="space-y-3 sm:space-y-4"
-              >
-                {formFields.map((field, index) => (
-                  <div key={field.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
-                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                      <label className="text-xs sm:text-sm font-medium text-gray-300">
-                        {field.label}
-                        {field.required && <span className="text-red-400 ml-1">*</span>}
-                      </label>
-                      {/* Only show delete for custom fields (not core fields) */}
-                      {!field.fieldKey && (
-                        <button
-                          onClick={() => deleteField(field.id)}
-                          className="text-xs text-red-400 hover:text-red-300 px-2 py-0.5 rounded hover:bg-red-500/10 transition-colors"
-                        >
-                          ลบ
-                        </button>
-                      )}
-                    </div>
-                    {field.isTextArea ? (
-                      <textarea
-                        value={field.value}
-                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                        placeholder={field.placeholder}
-                        rows={4}
-                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
-                      />
-                    ) : (
-                      <input
-                        type={field.fieldKey === "email" ? "email" : "text"}
-                        value={field.value}
-                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                        placeholder={field.placeholder}
-                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Field count indicator */}
-              {formFields.length > 3 && (
-                <div className="text-xs text-gray-500 text-center py-1">
-                  เลื่อนเพื่อดูฟิลด์เพิ่มเติม ({formFields.length} ฟิลด์)
+            {/* Form */}
+            <div className="p-5 space-y-4">
+              {formFields.map((field) => (
+                <div key={field.id}>
+                  <label className="text-sm font-medium text-slate-300 mb-1.5 block">
+                    {field.label}
+                    {field.required && <span className="text-red-400 ml-1">*</span>}
+                  </label>
+                  {field.isTextArea ? (
+                    <textarea
+                      value={field.value}
+                      onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                      placeholder={field.placeholder}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none"
+                    />
+                  ) : (
+                    <input
+                      type={field.fieldKey === "email" ? "email" : "text"}
+                      value={field.value}
+                      onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                    />
+                  )}
                 </div>
-              )}
-
-              {/* Action Buttons Row */}
-              <div className="flex flex-wrap gap-2 pt-2">
-                {/* Add Field Button */}
-                <button
-                  onClick={() => setIsAddFieldModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs sm:text-sm font-medium hover:bg-purple-500/30 transition-colors"
-                >
-                  <span className="text-base sm:text-lg">+</span>
-                  <span className="hidden sm:inline">เพิ่มฟิลด์</span>
-                  <span className="sm:hidden">เพิ่ม</span>
-                </button>
-
-                {/* Clear All Button */}
-                <button
-                  onClick={clearAllFields}
-                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg bg-gray-500/20 border border-gray-500/30 text-gray-300 text-xs sm:text-sm font-medium hover:bg-gray-500/30 transition-colors"
-                >
-                  🗑️
-                  <span className="hidden sm:inline">ล้างข้อมูลทั้งหมด</span>
-                  <span className="sm:hidden">ล้างทั้งหมด</span>
-                </button>
-              </div>
+              ))}
             </div>
 
-            {/* Modal Footer */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10">
+            {/* Footer */}
+            <div className="flex gap-3 p-5 border-t border-white/10">
               <button
                 onClick={() => setIsEmailModalOpen(false)}
-                className="w-full sm:w-auto order-2 sm:order-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium text-sm sm:text-base hover:bg-white/10 transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-medium text-sm hover:bg-white/10 transition-colors"
               >
-                ยกเลิก
+                {language === 'th' ? 'ยกเลิก' : 'Cancel'}
               </button>
               <button
                 onClick={handleSendEmail}
                 disabled={isSending}
-                className="w-full sm:flex-1 order-1 sm:order-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold text-sm sm:text-base shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-violet-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
               >
                 {isSending ? (
-                  <>
-                    <span className="animate-spin">⌛</span>
-                    <span>กำลังส่ง...</span>
-                  </>
+                  <><span className="animate-spin">⌛</span> {language === 'th' ? 'กำลังส่ง...' : 'Sending...'}</>
                 ) : (
-                  <>
-                    <span>📤</span>
-                    <span>ส่งอีเมล</span>
-                  </>
+                  <><span>📤</span> {language === 'th' ? 'ส่งอีเมล' : 'Send Email'}</>
                 )}
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Add Field Modal */}
-      {isAddFieldModalOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(4px)" }}
-          onClick={() => setIsAddFieldModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 animate-scale-in"
-            style={{
-              background: "linear-gradient(135deg, rgba(20, 20, 45, 0.98), rgba(40, 30, 60, 0.95))",
-              border: "1px solid rgba(139, 92, 246, 0.4)",
-              backdropFilter: "blur(20px)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h4 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
-              <span className="text-xl">➕</span>
-              เพิ่มฟิลด์ใหม่
-            </h4>
-
-            <input
-              type="text"
-              value={newFieldLabel}
-              onChange={(e) => setNewFieldLabel(e.target.value)}
-              placeholder="ชื่อฟิลด์ เช่น เงินเดือน, สวัสดิการ"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-white text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all mb-3 sm:mb-4"
-              autoFocus
-              onKeyDown={(e) => e.key === "Enter" && addNewField()}
-            />
-
-            <div className="flex gap-2 sm:gap-3">
-              <button
-                onClick={() => setIsAddFieldModalOpen(false)}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium text-sm hover:bg-white/10 transition-colors"
-              >
-                ยกเลิก
-              </button>
-              <button
-                onClick={addNewField}
-                disabled={!newFieldLabel.trim()}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                เพิ่ม
-              </button>
-            </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

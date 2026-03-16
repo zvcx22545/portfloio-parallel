@@ -1,219 +1,125 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 const skills = [
   {
     category: 'Frontend',
     icon: '🎨',
-    items: ['Vue.js', 'React.js', 'Next.js', 'HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Material UI'],
-    gradient: 'linear-gradient(135deg, #a855f7, #7c3aed)',
-    bgGlow: 'rgba(139, 92, 246, 0.12)'
+    items: ['HTML', 'CSS', 'JavaScript', 'Vue.js', 'React', 'Next.js', 'Bootstrap 5', 'Tailwind CSS'],
+    gradient: 'from-violet-500 to-violet-600',
+    borderColor: 'border-violet-500/20',
+    bgColor: 'bg-violet-500/8',
+    dotColor: 'bg-violet-400'
   },
   {
     category: 'Backend',
     icon: '⚙️',
-    items: ['Express.js', 'Knex.js', 'REST API', 'Node.js'],
-    gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    bgGlow: 'rgba(6, 182, 212, 0.12)'
+    items: ['Node.js', 'Express.js', 'REST API', 'PHP (PDO)'],
+    gradient: 'from-cyan-500 to-cyan-600',
+    borderColor: 'border-cyan-500/20',
+    bgColor: 'bg-cyan-500/8',
+    dotColor: 'bg-cyan-400'
   },
   {
     category: 'Database',
     icon: '🗄️',
-    items: ['Oracle', 'MySQL', 'SQL Query Optimization'],
-    gradient: 'linear-gradient(135deg, #ec4899, #be185d)',
-    bgGlow: 'rgba(236, 72, 153, 0.12)'
+    items: ['MySQL (Basic)', 'Oracle', 'SQL Query'],
+    gradient: 'from-pink-500 to-pink-600',
+    borderColor: 'border-pink-500/20',
+    bgColor: 'bg-pink-500/8',
+    dotColor: 'bg-pink-400'
   },
   {
     category: 'Tools',
     icon: '🔧',
-    items: ['GitHub', 'Git', 'Version Control'],
-    gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    bgGlow: 'rgba(59, 130, 246, 0.12)'
+    items: ['Git', 'GitHub', 'Postman', 'Figma (Basic)'],
+    gradient: 'from-blue-500 to-blue-600',
+    borderColor: 'border-blue-500/20',
+    bgColor: 'bg-blue-500/8',
+    dotColor: 'bg-blue-400'
   }
 ];
 
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
 export default function Skills() {
-  const [scrollY, setScrollY] = useState(0);
-  const sectionRef = useRef(null);
-  const [sectionTop, setSectionTop] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-      });
-    };
-
-    const updateSectionTop = () => {
-      if (sectionRef.current) {
-        setSectionTop(sectionRef.current.offsetTop);
-      }
-    };
-
-    updateSectionTop();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', updateSectionTop);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateSectionTop);
-    };
-  }, []);
-
-  const relativeScroll = Math.max(0, scrollY - sectionTop + 400);
-
   return (
-    <div 
-      ref={sectionRef}
-      style={{
-        padding: '6rem 0',
-        background: 'transparent',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      {/* Background effects */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: `
-          radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
-          radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.04) 0%, transparent 40%)
-        `,
-        transform: `translateY(${relativeScroll * 0.03}px)`,
-        pointerEvents: 'none'
-      }} />
-
-      <div className="container" style={{ 
-        position: 'relative', 
-        zIndex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 1.5rem'
-      }}>
-        <h2 className="animate-on-scroll" style={{
-          fontSize: 'clamp(2rem, 5vw, 3rem)',
-          fontWeight: 800,
-          textAlign: 'center',
-          marginBottom: '1rem',
-          color: 'white',
-          transform: `translateY(${-relativeScroll * 0.02}px)`
-        }}>
+    <div className="py-20 sm:py-24 relative overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl sm:text-4xl font-extrabold text-center mb-3 text-white"
+        >
           What I Use in{' '}
-          <span style={{ 
-            background: 'linear-gradient(135deg, #a855f7, #22d3ee)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>Real Projects</span>
-        </h2>
-        
-        <p className="animate-on-scroll" style={{
-          textAlign: 'center',
-          color: '#64748b',
-          marginBottom: '3rem',
-          fontSize: '1rem'
-        }}>
+          <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+            Real Projects
+          </span>
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="text-center text-slate-500 mb-10 sm:mb-12 text-sm sm:text-base"
+        >
           Technologies I work with daily
-        </p>
-        
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '1.25rem',
-          maxWidth: '1000px',
-          margin: '0 auto'
-        }}>
-          {skills.map((skill, idx) => {
-            const cardParallax = relativeScroll * 0.015 * (idx % 2 === 0 ? 1 : -1);
-            
-            return (
-              <div 
-                key={idx} 
-                className="glass-card animate-on-scroll" 
-                style={{
-                  padding: '1.5rem',
-                  borderRadius: '1.25rem',
-                  animationDelay: `${idx * 0.1}s`,
-                  transform: `translateY(${cardParallax}px)`,
-                  background: skill.bgGlow,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {/* Header */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.875rem',
-                  marginBottom: '1.25rem'
-                }}>
-                  <div style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '12px',
-                    background: skill.gradient,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.25rem',
-                    boxShadow: `0 4px 15px ${skill.bgGlow}`
-                  }}>
-                    {skill.icon}
-                  </div>
-                  <h3 style={{
-                    color: 'white',
-                    fontSize: '1.125rem',
-                    fontWeight: 700
-                  }}>
-                    {skill.category}
-                  </h3>
+        </motion.p>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-4xl mx-auto"
+        >
+          {skills.map((skill, idx) => (
+            <motion.div
+              key={idx}
+              variants={itemVariants}
+              className={`rounded-xl ${skill.bgColor} ${skill.borderColor} border p-5 sm:p-6 backdrop-blur-sm hover:border-opacity-50 transition-all duration-300 hover:scale-[1.02]`}
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${skill.gradient} flex items-center justify-center text-lg shadow-lg`}>
+                  {skill.icon}
                 </div>
-                
-                {/* Skills list */}
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {skill.items.map((item, i) => (
-                    <li key={i} style={{
-                      color: '#e2e8f0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginBottom: '0.625rem',
-                      padding: '0.375rem 0',
-                      borderBottom: i < skill.items.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
-                      fontSize: '0.9375rem'
-                    }}>
-                      <span style={{
-                        width: '6px',
-                        height: '6px',
-                        background: skill.gradient,
-                        borderRadius: '50%',
-                        marginRight: '0.625rem',
-                        flexShrink: 0
-                      }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                
-                {/* Skill count badge */}
-                <div style={{
-                  marginTop: '1rem',
-                  padding: '0.375rem 0.75rem',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderRadius: '9999px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.375rem',
-                  fontSize: '0.8125rem',
-                  color: '#94a3b8'
-                }}>
-                  <span style={{ color: '#a855f7', fontWeight: 600 }}>{skill.items.length}</span>
-                  technologies
-                </div>
+                <h3 className="text-white text-base font-bold">{skill.category}</h3>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Skills List */}
+              <ul className="space-y-2">
+                {skill.items.map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center gap-2.5 text-slate-200 text-sm"
+                  >
+                    <span className={`w-1.5 h-1.5 ${skill.dotColor} rounded-full flex-shrink-0`} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Count */}
+              <div className="mt-4 px-3 py-1 bg-white/5 rounded-full inline-flex items-center gap-1.5 text-xs text-slate-400">
+                <span className="text-violet-400 font-semibold">{skill.items.length}</span>
+                technologies
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </div>
   );
