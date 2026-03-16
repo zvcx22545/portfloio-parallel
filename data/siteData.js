@@ -176,7 +176,7 @@ export const educationData = [
     period: '2014 - 2020',
     degree: { th: 'มัธยมศึกษา', en: 'High School' },
     school: {
-      th: 'โรงเรียนพระปฐมวิทยาลัย (ปฐมวิทยา 2)',
+      th: 'โรงเรียนพระปฐมวิทยาลัย',
       en: 'Phra Pathom Witthayalai School',
     },
     faculty: null,
